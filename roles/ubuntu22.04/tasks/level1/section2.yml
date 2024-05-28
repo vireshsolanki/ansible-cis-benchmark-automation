@@ -152,7 +152,6 @@
 
 ###2.1.4.x Ensure ntp is configured
 
----
 
 - name: "2.1.4.1 | PATCH | Ensure ntp access control is configured "
   ansible.builtin.lineinfile:
@@ -237,7 +236,6 @@
 
 ###2.2.x Ensure X Window System is not installed
 
----
 
 - name: "2.2.1 | PATCH | Ensure X Window System is not installed"
   ansible.builtin.package:
@@ -599,7 +597,6 @@
 
 ####2.3.x Ensure NIS client is not installed
 
----
 
 - name: "2.3.1 | PATCH | Ensure NIS Client is not installed"
   ansible.builtin.package:
