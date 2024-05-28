@@ -30,6 +30,7 @@
   notify: Update_Initramfs
   when:
       - ubtu22cis_rule_1_1_1_1
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -57,6 +58,7 @@
   when:
       - required_mount not in mount_names
       - ubtu22cis_rule_1_1_2_1
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -75,6 +77,7 @@
   when:
       - required_mount in mount_names
       - ubtu22cis_rule_1_1_2_2
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -93,6 +96,7 @@
   when:
       - required_mount in mount_names
       - ubtu22cis_rule_1_1_2_3
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -111,6 +115,7 @@
   when:
       - required_mount in mount_names
       - ubtu22cis_rule_1_1_2_4
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -138,6 +143,7 @@
       - item.mount == "/var"
       - ubtu22cis_rule_1_1_3_2 or
         ubtu22cis_rule_1_1_3_3
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -171,6 +177,7 @@
       - ubtu22cis_rule_1_1_4_2 or
         ubtu22cis_rule_1_1_4_3 or
         ubtu22cis_rule_1_1_4_4
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -205,6 +212,7 @@
       - ubtu22cis_rule_1_1_5_2 or
         ubtu22cis_rule_1_1_5_3 or
         ubtu22cis_rule_1_1_5_4
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -235,6 +243,7 @@
       - ubtu22cis_rule_1_1_5_6 or
         ubtu22cis_rule_1_1_5_7 or
         ubtu22cis_rule_1_1_5_8
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
@@ -265,6 +274,7 @@
       - item.mount == "/home"
       - ubtu22cis_rule_1_1_6_2 or
         ubtu22cis_rule_1_1_6_3
+      - not system_is_container
   tags:
       - level1-server
       - level1-workstation
