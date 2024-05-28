@@ -106,12 +106,36 @@
   tags:
       - always
 
+
+
 - name: Run prelim tasks
   ansible.builtin.import_tasks:
       file: prelim.yml
   tags:
       - prelim_tasks
       - run_audit
+      - always
+
+- name: Setup rules if container
+  block:
+      - name: Discover and set container variable if required
+        ansible.builtin.set_fact:
+            system_is_container: true
+
+      - name: Load variable for container
+        ansible.builtin.include_vars:
+            file: "{{ container_vars_file }}"
+
+      - name: Output if discovered is a container
+        ansible.builtin.debug:
+            msg: system has been discovered as a container
+        when:
+            - system_is_container
+  when:
+      - ansible_connection == 'docker' or
+        ansible_facts.virtualization_type in ["docker", "lxc", "openvz", "podman", "container"]
+  tags:
+      - container_discovery
       - always
 
 - name: Gather the package facts after prelim
