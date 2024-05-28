@@ -5,7 +5,7 @@
 - name: "SECTION | 1"
   ansible.builtin.import_tasks:
       file: section1.yml
-  when: not system_is_container
+  #when: not system_is_container
 
 - name: "SECTION | 2"
   ansible.builtin.import_tasks:
