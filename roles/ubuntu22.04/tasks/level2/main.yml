@@ -1,0 +1,31 @@
+### Adding all the section for level1
+
+---
+
+- name: "SECTION | 1"
+  ansible.builtin.import_tasks:
+      file: section1.yml
+  when: not system_is_container
+
+
+- name: "SECTION | 3"
+  ansible.builtin.import_tasks:
+      file: section3.yml
+  when: 
+     - ubtu22cis_firewall_package == "ufw"
+     - ubtu22cis_firewall_package == "nftables"
+     - ubtu22cis_firewall_package == "iptables"
+
+- name: "SECTION | 4"
+  ansible.builtin.import_tasks:
+      file: section4.yml
+  when:
+     - ubtu22cis_syslog_service == 'journald'
+     - ubtu22cis_syslog_service == 'rsyslog'
+
+- name: "SECTION | 5"
+  ansible.builtin.import_tasks:
+      file: section5.yml
+  when: 
+     - not system_is_container
+

@@ -1,0 +1,51 @@
+### 5.x.x Ensure SSH attributes
+- name: "5.2.12 | PATCH | Ensure SSH X11 forwarding is disabled"
+  ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^X11Forwarding|^#X11Forwarding'
+      line: 'X11Forwarding no'
+      validate: 'sshd -t -f %s'
+  notify: Restart sshd
+  when:
+      - ubtu22cis_rule_5_2_12
+      - not system_is_container
+  tags:
+      - level2-server
+      - level1-workstation
+      - automated
+      - patch
+      - rule_5.2.12
+      - ssh
+- name: "5.2.16 | PATCH | Ensure SSH AllowTcpForwarding is disabled"
+  ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^AllowTcpForwarding|^#AllowTcpForwarding'
+      line: 'AllowTcpForwarding no'
+      validate: 'sshd -t -f %s'
+  notify: Restart sshd
+  when:
+      - ubtu22cis_rule_5_2_16
+      - not system_is_container
+  tags:
+      - level2-server
+      - level2-workstation
+      - automated
+      - patch
+      - rule_5.2.16
+      - ssh
+  
+- name: "5.3.4 | PATCH | Ensure users must provide password for escalation"
+  ansible.builtin.replace:
+      path: "{{ item }}"
+      regexp: '^([^#|{% if system_is_ec2 %}ec2-user{% endif %}].*)NOPASSWD(.*)'
+      replace: '\1PASSWD\2'
+      validate: '/usr/sbin/visudo -cf %s'
+  loop: "{{ ubtu22cis_sudoers_files.stdout_lines }}"
+  when:
+      - ubtu22cis_rule_5_3_4
+  tags:
+      - level2-server
+      - level2-workstation
+      - patch
+      - sudo
+      - rule_5.3.4

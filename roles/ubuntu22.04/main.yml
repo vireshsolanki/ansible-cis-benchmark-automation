@@ -1,0 +1,11 @@
+---
+- name: Execute tasks from specific folders
+  hosts: all
+  gather_facts: true
+
+  tasks:
+    - include_tasks: tasks/level1/main.yml
+      tags: level1
+
+    - include_tasks: tasks/level2/main.yml
+      tags: level2

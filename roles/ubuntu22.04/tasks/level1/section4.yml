@@ -1,0 +1,639 @@
+###Logging and Auditing
+
+####4.1.4.x Ensure logrotate is configured
+---
+
+- name: |
+      "4.1.4.1 | PATCH | Ensure audit log files are mode 0640 or less permissive"
+      "4.1.4.2 | PATCH | Ensure only authorized users own audit log files"
+      "4.1.4.3 | PATCH | Ensure only authorized groups are assigned ownership of audit log files"
+
+  block:
+      - name: "4.1.4.1 | AUDIT | Ensure audit log files are mode 0640 or less permissive | discover file"
+        ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+        changed_when: false
+        register: audit_discovered_logfile
+
+      - name: "4.1.4.1 | AUDIT | Ensure audit log files are mode 0640 or less permissive | stat file"
+        ansible.builtin.stat:
+            path: "{{ audit_discovered_logfile.stdout }}"
+        changed_when: false
+        register: auditd_logfile
+
+      - name: |
+            "4.1.4.1 | PATCH | Ensure audit log files are mode 0640 or less permissive"
+            "4.1.4.2 | PATCH | Ensure only authorized users own audit log files"
+            "4.1.4.3 | PATCH | Ensure only authorized groups are assigned ownership of audit log files"
+        ansible.builtin.file:
+            path: "{{ audit_discovered_logfile.stdout }}"
+            mode: "{% if auditd_logfile.stat.mode > '0640' %}0640{% endif %}"
+            owner: root
+            group: root
+  when:
+      - ubtu22cis_rule_4_1_4_1 or
+        ubtu22cis_rule_4_1_4_2 or
+        ubtu22cis_rule_4_1_4_3
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.1
+      - rule_4.1.4.2
+      - rule_4.1.4.3
+
+- name: "4.1.4.4 | PATCH | Ensure the audit log directory is 0750 or more restrictive"
+  block:
+      - name: "4.1.4.4 | AUDIT | Ensure the audit log directory is 0750 or more restrictive | get current permissions"
+        ansible.builtin.stat:
+            path: "{{ audit_discovered_logfile.stdout | dirname }}"
+        register: auditlog_dir
+
+      - name: "4.1.4.4 | PATCH | Ensure the audit log directory is 0750 or more restrictive | set"
+        ansible.builtin.file:
+            path: "{{ audit_discovered_logfile.stdout | dirname }}"
+            state: directory
+            mode: '0750'
+        when: not auditlog_dir.stat.mode is match('07(0|5)0')
+  when:
+      - ubtu22cis_rule_4_1_4_4
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.4
+
+- name: "4.1.4.5 | PATCH | Ensure audit configuration files are 640 or more restrictive"
+  ansible.builtin.file:
+      path: "{{ item.path }}"
+      mode: '0640'
+  loop: "{{ auditd_conf_files.files }}"
+  loop_control:
+      label: "{{ item.path }}"
+  when:
+      - ubtu22cis_rule_4_1_4_5
+      - item.mode > '0640'
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.5
+
+- name: "4.1.4.6 | PATCH | Ensure audit configuration files are owned by root"
+  ansible.builtin.file:
+      path: "{{ item.path }}"
+      owner: root
+  loop: "{{ auditd_conf_files.files }}"
+  loop_control:
+      label: "{{ item.path }}"
+  when:
+      - ubtu22cis_rule_4_1_4_6
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.6
+
+- name: "4.1.4.7 | PATCH | Ensure audit configuration files belong to group root"
+  ansible.builtin.file:
+      path: "{{ item.path }}"
+      group: root
+  loop: "{{ auditd_conf_files.files }}"
+  loop_control:
+      label: "{{ item.path }}"
+  when:
+      - ubtu22cis_rule_4_1_4_7
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.7
+
+- name: "4.1.4.8 | PATCH | Ensure audit tools are 755 or more restrictive"
+  block:
+      - name: "4.1.4.8 | AUDIT | Get audit binary file stat | get current mode"
+        ansible.builtin.stat:
+            path: "{{ item }}"
+        register: "audit_bins"
+        loop:
+            - /sbin/auditctl
+            - /sbin/aureport
+            - /sbin/ausearch
+            - /sbin/autrace
+            - /sbin/auditd
+            - /sbin/augenrules
+
+      - name: "4.1.4.8 | PATCH | Ensure audit tools are 755 or more restrictive | set if required"
+        ansible.builtin.file:
+            path: "{{ item.item }}"
+            mode: '0750'
+
+        loop: "{{ audit_bins.results }}"
+        loop_control:
+            label: "{{ item.item }}"
+        when: not item.stat.mode is match('07(0|5)0')
+  when:
+      - ubtu22cis_rule_4_1_4_8
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.8
+
+- name: "4.1.4.9 | PATCH | Ensure audit tools are owned by root"
+  ansible.builtin.file:
+      path: "{{ item }}"
+      owner: root
+      group: root
+  loop:
+      - /sbin/auditctl
+      - /sbin/aureport
+      - /sbin/ausearch
+      - /sbin/autrace
+      - /sbin/auditd
+      - /sbin/augenrules
+  when:
+      - ubtu22cis_rule_4_1_4_9
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.9
+
+- name: "4.1.4.10 | PATCH | Ensure audit tools belong to group root"
+  ansible.builtin.file:
+      path: "{{ item }}"
+      group: root
+  loop:
+      - /sbin/auditctl
+      - /sbin/aureport
+      - /sbin/ausearch
+      - /sbin/autrace
+      - /sbin/auditd
+      - /sbin/augenrules
+  when:
+      - ubtu22cis_rule_4_1_4_10
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.10
+
+- name: "4.1.4.11 | PATCH | Ensure cryptographic mechanisms are used to protect the integrity of audit tools"
+  ansible.builtin.lineinfile:
+      path: /etc/aide/aide.conf
+      regexp: "{{ item }}"
+      line: "{{ item }}"
+  loop:
+      - '# Audit tools'
+      - /sbin/auditctl p+i+n+u+g+s+b+acl+xattrs+sha512
+      - /sbin/aureport p+i+n+u+g+s+b+acl+xattrs+sha512
+      - /sbin/ausearch p+i+n+u+g+s+b+acl+xattrs+sha512
+      - /sbin/autrace p+i+n+u+g+s+b+acl+xattrs+sha512
+      - /sbin/auditd p+i+n+u+g+s+b+acl+xattrs+sha512
+      - /sbin/augenrules p+i+n+u+g+s+b+acl+xattrs+sha512
+  when:
+      - ubtu22cis_rule_4_1_4_11 and
+        ubtu22cis_config_aide
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - auditd
+      - rule_4.1.4.11
+
+###4.2.1.1.x Ensure systemd-journald installed
+
+- name: "4.2.1.1.1 | PATCH | Ensure systemd-journal-remote is installed"
+  ansible.builtin.package:
+      name: systemd-journal-remote
+      state: present
+  when:
+      - ubtu22cis_rule_4_2_1_1_1
+      - not ubtu22cis_system_is_log_server
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.1.1.1
+
+- name: "4.2.1.1.2 | PATCH | Ensure systemd-journal-remote is configured"
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/journal-upload.conf
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+  notify: Restart journald
+  loop:
+      - { regexp: 'URL=', line: 'URL={{ ubtu22cis_remote_log_server }}'}
+      - { regexp: 'ServerKeyFile=', line: 'ServerKeyFile={{ ubtu22cis_journal_upload_serverkeyfile }}'}
+      - { regexp: 'ServerCertificateFile=', line: 'ServerCertificateFile={{ ubtu22cis_journal_servercertificatefile }}'}
+      - { regexp: 'TrustedCertificateFile=', line: 'TrustedCertificateFile={{ ubtu22cis_journal_trustedcertificatefile }}'}
+  when:
+      - ubtu22cis_rule_4_2_1_1_2
+      - not ubtu22cis_system_is_log_server
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.1.1.2
+
+- name: "4.2.1.1.3 | PATCH | Ensure systemd-journal-remote is enabled"
+  ansible.builtin.systemd:
+      name: systemd-journal-upload
+      state: started
+      enabled: true
+  when:
+      - not ubtu22cis_system_is_log_server
+      - ubtu22cis_rule_4_2_1_1_3
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.1.1.3
+
+- name: "4.2.1.1.4 | PATCH | Ensure journald is not configured to recieve logs from a remote client"
+  ansible.builtin.systemd:
+      name: systemd-journal-remote.socket
+      state: stopped
+      enabled: false
+      masked: true
+  when:
+      - not ubtu22cis_system_is_log_server
+      - ubtu22cis_rule_4_2_1_1_4
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - journald
+      - rule_4.2.1.1.4
+
+
+###4.2.1.x Ensure journalD restart
+
+- name: "4.2.1.2 | PATCH | Ensure journald service is enabled"
+  block:
+      - name: "4.2.1.2 | AUDIT | Ensure journald service is enabled | Capture status"
+        ansible.builtin.shell: systemctl is-enabled systemd-journald.service
+        changed_when: false
+        failed_when: false
+        register: ubtu22cis_4_2_1_2_status
+
+      - name: "4.2.1.2 | AUDIT | Ensure journald service is enabled | Alert on bad status"
+        ansible.builtin.debug:
+            msg:
+                - "Warning!! The status of systemd-journald should be static and it is not. Please investigate"
+        when: "'static' not in ubtu22cis_4_2_1_2_status.stdout"
+
+      - name: "4.2.1.2 | AUDIT | Ensure journald service is enabled | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+        when: "'static' not in ubtu22cis_4_2_1_2_status.stdout"
+  vars:
+      warn_control_id: '4.2.1.2'
+  when:
+      - ubtu22cis_rule_4_2_1_2
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - audit
+      - journald
+      - rule_4.2.1.2
+
+- name: "4.2.1.3 | PATCH | Ensure journald is configured to compress large log files"
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/journald.conf
+      regexp: '^(#|)Compress='
+      line: Compress=yes
+  notify: Restart journald
+  when:
+      - ubtu22cis_rule_4_2_1_3
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - journald
+      - rule_4.2.1.3
+
+- name: "4.2.1.4 | PATCH | Ensure journald is configured to write logfiles to persistent disk"
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/journald.conf
+      regexp: '^(#|)Storage='
+      line: Storage=persistent
+  notify: Restart journald
+  when:
+      - ubtu22cis_rule_4_2_1_4
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - journald
+      - rule_4.2.1.4
+
+- name: "4.2.1.5 | PATCH | Ensure journald is not configured to send logs to rsyslog"
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/journald.conf
+      regexp: '^ForwardToSyslog='
+      line: '#ForwardToSyslog=yes'
+  notify: Restart journald
+  when:
+      - ubtu22cis_rule_4_2_1_5
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level2-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.1.5
+
+- name: "4.2.1.6 | PATCH | Ensure journald log rotation is configured per site policy"
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/journald.conf
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+  notify: Restart journald
+  loop:
+      - { regexp: '^(#|\s+)SystemMaxUse=', line: "{{ ubtu22cis_journald_systemmaxuse }}" }
+      - { regexp: '^(#|\s+)SystemKeepFree=', line: "{{ ubtu22cis_journald_systemkeepfree }}" }
+      - { regexp: '^(#|\s+)RuntimeMaxUse=', line: "{{ ubtu22cis_journald_runtimemaxuse }}" }
+      - { regexp: '^(#|\s+)RuntimeKeepFree=', line: "{{ ubtu22cis_journald_runtimekeepfree }}" }
+      - { regexp: '^(#|\s+)MaxFileSec=', line: "{{ ubtu22cis_journald_maxfilesec }}" }
+  when:
+      - ubtu22cis_rule_4_2_1_6
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.1.6
+
+- name: "4.2.1.7 | AUDIT | Ensure journald default file permissions configured"
+  block:
+      - name: "4.2.1.7 | AUDIT | Ensure journald default file permissions configured | Check for override file"
+        ansible.builtin.stat:
+            path: /etc/tmpfiles.d/systemd.conf
+        register: ubtu22cis_4_2_1_7_override
+
+      - name: "4.2.1.7 | AUDIT | Ensure journald default file permissions configured | Set live file"
+        ansible.builtin.set_fact:
+            systemd_conf_file: /etc/tmpfiles.d/systemd.conf
+        when: ubtu22cis_4_2_1_7_override.stat.exists
+
+      - name: "4.2.1.7 | PATCH | Ensure journald default file permissions configured | Set permission"
+        ansible.builtin.lineinfile:
+            path: "{{ systemd_conf_file | default('/usr/lib/tmpfiles.d/systemd.conf') }}"
+            regexp: '^z \/var\/log\/journal\/%m\/system.journal (!?06(0|4)0) root'
+            line: 'z /var/log/journal/%m/system.journal 0640 root systemd-journal - -'
+  when:
+      - ubtu22cis_rule_4_2_1_7
+      - ubtu22cis_syslog_service == 'journald'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.1.7
+
+
+###4.2.2.x 
+
+- name: "4.2.2.1 | PATCH | Ensure rsyslog is installed"
+  ansible.builtin.package:
+      name: rsyslog
+      state: present
+  when:
+      - ubtu22cis_rule_4_2_2_1
+      - "'rsyslog' not in ansible_facts.packages"
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - rule_4.2.2.1
+      - rsyslog
+      - apt
+
+- name: "4.2.2.2 | PATCH | Ensure rsyslog Service is enabled"
+  ansible.builtin.systemd:
+      name: rsyslog
+      enabled: true
+  when:
+      - ubtu22cis_rule_4_2_2_2
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - rule_4.2.2.2
+      - rsyslog
+
+- name: "4.2.2.3 | PATCH | Ensure journald is configured to send logs to rsyslog"
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/journald.conf
+      regexp: ^ForwardToSyslog=
+      line: ForwardToSyslog=yes
+  notify: Restart syslog service
+  when:
+      - ubtu22cis_rule_4_2_2_3
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - journald
+      - rule_4.2.2.3
+
+- name: "4.2.2.4 | PATCH | Ensure rsyslog default file permissions configured"
+  ansible.builtin.lineinfile:
+      path: /etc/rsyslog.conf
+      regexp: '^\$FileCreateMode|^#\$FileCreateMode'
+      line: '$FileCreateMode 0640'
+  notify: Restart syslog service
+  when:
+      - ubtu22cis_rule_4_2_2_4
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - rule_4.2.2.4
+      - rsyslog
+
+- name: "4.2.2.5 | PATCH | Ensure logging is configured"
+  block:
+      - name: "4.2.2.5 | AUDIT | Ensure logging is configured | Find configuration file"
+        ansible.builtin.shell: grep -r "*.emerg" /etc/* | cut -f1 -d":"
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: ubtu22cis_4_2_2_5_rsyslog_config_path
+
+      - name: "4.2.2.5 | AUDIT | Ensure logging is configured | Gather rsyslog current config"
+        ansible.builtin.shell: "cat {{ ubtu22cis_4_2_2_5_rsyslog_config_path.stdout }}"
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: ubtu22cis_4_2_2_5_rsyslog_config
+
+      - name: "4.2.2.5 | AUDIT | Ensure logging is configured | Message out config"
+        ansible.builtin.debug:
+            msg:
+                - "Warning!! Below is the current logging configurations for rsyslog, please review"
+                - "{{ ubtu22cis_4_2_2_5_rsyslog_config.stdout_lines }}"
+        when: not ubtu22cis_rsyslog_ansible_managed
+
+      - name: "4.2.2.5 | PATCH | Ensure logging is configured | Set warning count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+        when: not ubtu22cis_rsyslog_ansible_managed
+
+      - name: "4.2.2.5 | PATCH | Ensure logging is configured | Automated rsyslog configuration"
+        ansible.builtin.lineinfile:
+            path: "{{ ubtu22cis_4_2_2_5_rsyslog_config_path.stdout }}"
+            regexp: "{{ item.regexp }}"
+            line: "{{ item.line }}"
+            insertafter: "{{ item.insertafter }}"
+        with_items:
+            - { regexp: '^\*.emerg', line: '*.emerg                         :omusrmsg:*', insertafter: '^# Emergencies are sent to everybody logged in' }
+            - { regexp: '^auth,authpriv.\*', line: 'auth,authpriv.*                  /var/log/secure', insertafter: '^# First some standard log files.  Log by facility' }
+            - { regexp: '^mail.\*|^#mail.\*', line: 'mail.*                          -/var/log/mail', insertafter: '^# First some standard log files' }
+            - { regexp: '^cron.\*|^#cron.\*', line: 'cron.*                          /var/log/cron', insertafter: '^# First some standard log files' }
+            - { regexp: '^mail.info|^#mail.info', line: 'mail.info                      -/var/log/mail.info', insertafter: '^# Logging for the mail system' }
+            - { regexp: '^mail.warn|^#mail.warn', line: 'mail.warning                   -/var/log/mail.warn', insertafter: '^# Logging for the mail system.' }
+            - { regexp: '^mail.err|^#mail.err', line: 'mail.err                        /var/log/mail.err', insertafter: '^# Logging for the mail system.' }
+            - { regexp: '^\*.=warning;\*.=err|^#\*.=warning;\*.=err', line: '*.=warning;*.=err               -/var/log/warn', insertafter: '^# First some standard log files' }
+            - { regexp: '^\*.crit|^#\*.crit', line: '*.crit                           /var/log/warn', insertafter: '^# First some standard log files' }
+            - { regexp: '^\*.\*;mail.none;news.none|^#\*.\*;mail.none;news.none', line: '*.*;mail.none;news.none         -/var/log/messages', insertafter: '^# First some standard log files' }
+            - { regexp: '^local0,local1.\*|^#local0,local1.\*', line: 'local0,local1.*                 -/var/log/localmessages', insertafter: '^# First some standard log files' }
+            - { regexp: '^local2,local3.\*|^#local2,local3.\*', line: 'local2,local3.*                 -/var/log/localmessages', insertafter: '^# First some standard log files' }
+            - { regexp: '^local4,local5.\*|^#local4,local5.\*', line: 'local4,local5.*                 -/var/log/localmessages', insertafter: '^# First some standard log files' }
+            - { regexp: '^local6,local7.\*|^#local6,local7.\*', line: 'local6,local7.*                 -/var/log/localmessages', insertafter: '^# First some standard log files' }
+        loop_control:
+            label: "{{ item.line }}"
+        notify: Restart syslog service
+        when: ubtu22cis_rsyslog_ansible_managed
+  vars:
+      warn_control_id: '4.2.2.5'
+  when:
+      - ubtu22cis_rule_4_2_2_5
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - rule_4.2.2.5
+      - rsyslog
+
+- name: "4.2.2.6 | PATCH | Ensure rsyslog is configured to send logs to a remote log host"
+  ansible.builtin.blockinfile:
+      path: /etc/rsyslog.conf
+      block: |
+          ##Enable sending of logs over TCP add the following line:
+          *.* @@{{ ubtu22cis_remote_log_server }}
+      insertafter: EOF
+  when:
+      - ubtu22cis_rule_4_2_2_6
+      - not ubtu22cis_system_is_log_server
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - rule_4.2.2.6
+      - rsyslog
+
+- name: "4.2.2.7 | PATCH | Ensure rsyslog is not configured to receive logs from a remote client"
+  block:
+      - name: "4.2.2.7 | PATCH | Ensure rsyslog is not configured to receive logs from a remote client | When not a log host"
+        ansible.builtin.replace:
+            path: /etc/rsyslog.conf
+            regexp: '({{ item }})'
+            replace: '#\1'
+        with_items:
+            - '^(\$ModLoad|module(load="imtcp"))'
+            - '^(\$(InputTCP|InputRELP|UDP)ServerRun|input(type="imtcp" port=".*"))'
+        notify: Restart syslog service
+        when: not ubtu22cis_system_is_log_server
+
+      - name: "4.2.2.7 | PATCH | Ensure rsyslog is not configured to receive logs from a remote client | When a log server"
+        ansible.builtin.lineinfile:
+            path: /etc/rsyslog.conf
+            regexp: "{{ item.regexp }}"
+            line: "{{ item.line }}"
+        with_items:
+            - { regexp: '^\$ModLoad|^#\$ModLoad', line: '$ModLoad imtcp' }
+            - { regexp: '^\$InputTCPServerRun|^#\$InputTCPServerRun', line: '$InputTCPServerRun 514' }
+        notify: Restart syslog service
+        when: ubtu22cis_system_is_log_server
+  when:
+      - ubtu22cis_rule_4_2_2_7
+      - ubtu22cis_syslog_service == 'rsyslog'
+  tags:
+      - level1-server
+      - level1-workstation
+      - manual
+      - patch
+      - rule_4.2.2.7
+      - rsyslog
+
+
+###4.2.3 permissions on all log files
+
+- name: "4.2.3 | PATCH | Ensure permissions on all logfiles are configured"
+  block:
+      - name: "4.2.3 | AUDIT | Ensure permissions on all logfiles are configured | find files"
+        ansible.builtin.find:
+            paths: "/var/log"
+            file_type: file
+            recurse: true
+            hidden: true
+        register: logfiles
+
+      - name: "4.2.3 | PATCH | Ensure permissions on all logfiles are configured | change permissions"
+        ansible.builtin.file:
+            path: "{{ item.path }}"
+            mode: '0640'
+        loop: "{{ logfiles.files }}"
+        loop_control:
+            label: "{{ item.path }}"
+        when:
+            - item.path != "/var/log/btmp"
+            - item.path != "/var/log/utmp"
+            - item.path != "/var/log/wtmp"
+  when:
+      - ubtu22cis_rule_4_2_3
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - logfiles
+      - rule_4.2.3
