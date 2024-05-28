@@ -30,7 +30,7 @@
   notify: Update_Initramfs
   when:
       - ubtu22cis_rule_1_1_1_1
-      - not system_is_container
+      - not system_is_container | default(false)
   tags:
       - level1-server
       - level1-workstation
