@@ -248,7 +248,8 @@
       - varlogaudit
 
 
-###1.1.6.x Ensure separate partition exists for /home
+###1.1.6.x Ensure separate partition exists for /homerule_1_1_8
+
 
 - name: |
     "1.1.6.2 | PATCH | Ensure /home partition includes the nodev option"
@@ -288,7 +289,7 @@
       src: /dev/shm
       fstype: tmpfs
       state: present
-      opts: "defaults,{% if ubtu22cis_rule_1_1_8_1 %}nodev,{% endif %}{% if ubtu22cis_rule_1_1_8_2 %}nosuid,{% endif %}{% if ubtu22cis_rule_1_1_8_3 %}noexec{% endif %}"
+      opts: "defaults,{% if ubtu22cis_rule_1_1_7_1 %}nodev,{% endif %}{% if ubtu22cis_rule_1_1_7_2 %}nosuid,{% endif %}{% if ubtu22cis_rule_1_1_7_3 %}noexec{% endif %}"
   notify: Remount dev_shm
   when:
       - ubtu22cis_rule_1_1_7_1 or
