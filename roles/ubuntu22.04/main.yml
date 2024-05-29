@@ -1,6 +1,7 @@
 ---
 - name: Execute tasks from specific folders
   hosts: localhost
+  become: yes
   gather_facts: true
 
   roles:

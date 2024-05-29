@@ -146,6 +146,10 @@
 - name: Run parse /etc/passwd
   ansible.builtin.import_tasks:
       file: parse_etc_password.yml
+  when:
+     - ubtu22cis_level1
+     - ubtu22cis_level2
+  
   tags: 
       - always
 
