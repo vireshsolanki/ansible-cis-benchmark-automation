@@ -166,6 +166,7 @@
   when: ubtu22cis_level1
   tags:
       - level1
+      - ubuntu22.04-level1
 
 
 - name: Include level 2 patches
@@ -174,6 +175,7 @@
   when: ubtu22cis_level2
   tags:
       - level2
+      - ubuntu22.04-level2
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
