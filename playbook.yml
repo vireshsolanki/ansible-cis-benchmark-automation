@@ -1,0 +1,13 @@
+---
+- name: Execute tasks from specific folders
+  hosts: localhost
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: ubuntu22.04
+      tasks_from: tasks/level1/main.yml
+      tags: ubuntu22.04-level1
+    - role: ubuntu22.04
+      tasks_from: tasks/level2/main.yml
+      tags: ubuntu22.04-level2
