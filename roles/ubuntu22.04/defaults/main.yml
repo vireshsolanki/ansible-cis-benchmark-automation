@@ -88,7 +88,7 @@ ubtu22cis_rule_1_2_1: true
 ubtu22cis_rule_1_2_2: true
 ubtu22cis_rule_1_3_1: true
 ubtu22cis_rule_1_3_2: true
-ubtu22cis_rule_1_4_1: true
+ubtu22cis_rule_1_4_1: false
 ubtu22cis_rule_1_4_2: true
 ubtu22cis_rule_1_4_3: true
 ubtu22cis_rule_1_5_1: true
