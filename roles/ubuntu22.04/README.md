@@ -1,7 +1,7 @@
 ```markdown
 # Ansible CIS Benchmark Role
 
-This Ansible role facilitates the implementation of security configurations based on the CIS (Center for Internet Security) Benchmark for Ubuntu servers. It provides configuration options for different environments and allows for the execution of specific CIS security levels.
+This Ansible role implements security configurations based on the CIS (Center for Internet Security) Benchmark for Ubuntu servers. It is compatible with Ansible versions 2.12.0 and above.
 
 ## Configuration
 
@@ -61,4 +61,4 @@ Contributions are welcomed! Please submit any improvements or suggestions via pu
 This project is licensed under the [MIT License](LICENSE).
 ```
 
-This README provides comprehensive information about the Ansible CIS Benchmark role, including configuration options, usage guidelines for specific CIS security levels, notes, contribution guidelines, and licensing information.
+This README provides comprehensive information about the Ansible CIS Benchmark role, including configuration options, usage guidelines for specific CIS security levels, notes, contribution guidelines, and licensing information. Additionally, it emphasizes the compatibility of the role with Ansible versions 2.12.0 and above.
