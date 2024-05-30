@@ -252,6 +252,18 @@
       - rule_2.2.1
       - xwindows
 
+- name: "PRELIM | AUDIT | Check for avahi-daemon service"
+  ansible.builtin.shell: "systemctl show avahi-daemon | grep LoadState | cut -d = -f 2"
+  register: avahi_service_status
+  changed_when: false
+  check_mode: false
+  when:
+      - ubtu22cis_rule_2_2_2
+  tags:
+      - skip_ansible_lint
+      - always
+
+
 - name: "2.2.2 | PATCH | Ensure Avahi Server is not installed"
   block:
       - name: "2.2.2 | PATCH | Ensure Avahi Server is not installed| Stop/Disable avahi-daemon.service"
