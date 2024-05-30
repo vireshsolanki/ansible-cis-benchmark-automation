@@ -13,8 +13,8 @@ ubtu22cis_firewall_package: None
 
 ## Related individual rules
 # Aide
-ubtu22cis_rule_1_4_1: false
-ubtu22cis_rule_1_4_2: false
+ubtu22cis_rule_1_4_1: true
+ubtu22cis_rule_1_4_2: true
 
 # AppArmor
 ubtu22cis_rule_1_6_1: false
@@ -27,13 +27,13 @@ ubtu22cis_rule_2_1_1_1: false
 ubtu22cis_rule_2_2_1_2: false
 
 # Auditd
-ubtu22cis_rule_4_1_1_1: false
-ubtu22cis_rule_4_1_1_2: false
-ubtu22cis_rule_4_1_1_3: false
-ubtu22cis_rule_4_1_1_4: false
-ubtu22cis_rule_4_1_2_1: false
-ubtu22cis_rule_4_1_2_2: false
-ubtu22cis_rule_4_1_2_3: false
+ubtu22cis_rule_4_1_1_1: true
+ubtu22cis_rule_4_1_1_2: true
+ubtu22cis_rule_4_1_1_3: true
+ubtu22cis_rule_4_1_1_4: true
+ubtu22cis_rule_4_1_2_1: true
+ubtu22cis_rule_4_1_2_2: true
+ubtu22cis_rule_4_1_2_3: true
 # Auditd rules
 ubtu22cis_rule_4_1_3_1: false
 ubtu22cis_rule_4_1_3_2: false
