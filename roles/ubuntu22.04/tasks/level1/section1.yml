@@ -357,6 +357,18 @@
 
 ###1.1.8 Disable Automounting
 
+- name: "PRELIM | AUDIT | Check for autofs service"
+  ansible.builtin.shell: "systemctl show autofs | grep LoadState | cut -d = -f 2"
+  register: ubtu22cis_autofs_service_status
+  changed_when: false
+  check_mode: false
+  when:
+      - ubtu22cis_rule_1_1_9
+  tags:
+      - skip_ansible_lint
+      - section1
+      - always
+
 - name: "1.1.8 | PATCH | Disable Automounting"
   ansible.builtin.service:
       name: autofs
@@ -375,19 +387,6 @@
       - automounting
 
 ###1.1.9.x  Disable USB storage
-
-
-- name: "PRELIM | AUDIT | Check for autofs service"
-  ansible.builtin.shell: "systemctl show autofs | grep LoadState | cut -d = -f 2"
-  register: ubtu22cis_autofs_service_status
-  changed_when: false
-  check_mode: false
-  when:
-      - ubtu22cis_rule_1_1_9
-  tags:
-      - skip_ansible_lint
-      - section1
-      - always
 
 - name: "1.1.9 | PATCH | Disable USB Storage"
   block:
