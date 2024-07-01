@@ -10,8 +10,7 @@ After=swap.target
 What=tmpfs
 Where=/tmp
 Type=tmpfs
-
-Options: {{ tmp_partition_mount_options | unique | join(',') }}
+Options={{ tmp_partition_mount_options | unique | join(',') }}
 
 [Install]
 WantedBy=local-fs.target
