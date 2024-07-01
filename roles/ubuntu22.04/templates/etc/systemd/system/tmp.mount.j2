@@ -1,16 +1,15 @@
 [Unit]
 Description=Temporary Directory /tmp
-ConditionPathIsSymbolicLink=!/tmp
+Documentation=man:tmpfiles.d(5)
 DefaultDependencies=no
 Conflicts=umount.target
-Before=local-fs.target umount.target
-After=swap.target
+Before=local-fs.target
 
 [Mount]
 What=tmpfs
 Where=/tmp
 Type=tmpfs
-Options={{ tmp_partition_mount_options | unique | join(',') }}
+Options=mode=1777,{{ tmp_partition_mount_options | unique | join(',') }}
 
 [Install]
 WantedBy=local-fs.target
