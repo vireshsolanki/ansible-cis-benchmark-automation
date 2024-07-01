@@ -9,7 +9,7 @@ ubtu22cis_level2: true
 
 ## Reboot system before audit
 # System will reboot if false, can give better audit results
-skip_reboot: true
+skip_reboot: false
 
 ## Benchmark name and profiles used by auditing control role
 # The audit variable found at the base
@@ -47,7 +47,7 @@ ubtu22cis_uses_root: false
 # Skip events for EC2 instance testing pipeline.
 # This variable is set to true for automated tests
 # carried out for this role by the role maintainers.
-system_is_ec2: true
+system_is_ec2: false  
 
 ##
 ## Rule-specific switches
@@ -228,6 +228,14 @@ ubtu22cis_rule_4_1_1_1: true
 ubtu22cis_rule_4_1_1_2: true
 ubtu22cis_rule_4_1_1_3: true
 ubtu22cis_rule_4_1_1_4: true
+ubtu22cis_rule_4_1_4_5: true
+ubtu22cis_rule_4_1_4_6: true
+ubtu22cis_rule_4_1_4_7: true
+ubtu22cis_rule_4_1_4_8: true
+ubtu22cis_rule_4_1_4_9: true
+ubtu22cis_rule_4_1_4_10: true
+ubtu22cis_rule_4_1_4_11: true
+
 ubtu22cis_rule_4_1_2_1: true
 ubtu22cis_rule_4_1_2_2: true
 ubtu22cis_rule_4_1_2_3: true
@@ -258,13 +266,6 @@ ubtu22cis_rule_4_1_4_1: true
 ubtu22cis_rule_4_1_4_2: true
 ubtu22cis_rule_4_1_4_3: true
 ubtu22cis_rule_4_1_4_4: true
-ubtu22cis_rule_4_1_4_5: true
-ubtu22cis_rule_4_1_4_6: true
-ubtu22cis_rule_4_1_4_7: true
-ubtu22cis_rule_4_1_4_8: true
-ubtu22cis_rule_4_1_4_9: true
-ubtu22cis_rule_4_1_4_10: true
-ubtu22cis_rule_4_1_4_11: true
 # Configure Logging
 ## journald
 ubtu22cis_rule_4_2_1_1_1: true
