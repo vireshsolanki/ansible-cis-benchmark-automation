@@ -169,7 +169,7 @@
 #       - rule_1.1.2.4
 #       - tmp
 
----
+
 # Tasks for level 1 section 1
 
 - name: PRELIM | AUDIT | Section 1.1 | Create list of mount points
