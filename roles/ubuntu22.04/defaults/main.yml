@@ -51,9 +51,7 @@ system_is_ec2: false
 
 
 ##Some default actions
-cis_ubuntu2204_section1_owner_default: root
-cis_ubuntu2204_section1_group_default: root
-cis_ubuntu2204_section1_mode_default: "0644"
+
 ##
 ## Rule-specific switches
 ##

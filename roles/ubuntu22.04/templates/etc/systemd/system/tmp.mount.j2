@@ -1,12 +1,3 @@
-{% set ubtu22cis_rule_1_1_2_1_options = [] %}
-{% set _ = ubtu22cis_rule_1_1_2_1_options.append('defaults') %}
-{% set _ = ubtu22cis_rule_1_1_2_1_options.append('rw') %}
-{% set _ = ubtu22cis_rule_1_1_2_1_options.append('relatime') %}
-{% set _ = ubtu22cis_rule_1_1_2_1_options.append('size=2G') %}
-{% if ubtu22cis_rule_1_1_2_1_2 %}{% set _ = ubtu22cis_rule_1_1_2_1_options.append('nodev') %}{% endif %}
-{% if ubtu22cis_rule_1_1_2_1_3 %}{% set _ = ubtu22cis_rule_1_1_2_1_options.append('nosuid') %}{% endif %}
-{% if ubtu22cis_rule_1_1_2_1_4 %}{% set _ = ubtu22cis_rule_1_1_2_1_options.append('noexec') %}{% endif %}
-{% set ubtu22cis_rule_1_1_2_1_options = ubtu22cis_rule_1_1_2_1_options|join(',') %}
 [Unit]
 Description=Temporary Directory /tmp
 ConditionPathIsSymbolicLink=!/tmp
@@ -16,11 +7,11 @@ Before=local-fs.target umount.target
 After=swap.target
 
 [Mount]
-Where=/tmp
 What=tmpfs
+Where=/tmp
 Type=tmpfs
-Options={{ ubtu22cis_rule_1_1_2_1_options }}
 
-# Make 'systemctl enable tmp.mount' work:
+Options: {{ tmp_partition_mount_options | unique | join(',') }}
+
 [Install]
 WantedBy=local-fs.target

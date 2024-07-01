@@ -101,6 +101,11 @@
       - always
 
 
+- name: "PRELIM | AUDIT | Section 1.1 | Create list of mount points"
+  ansible.builtin.set_fact:
+      mount_names: "{{ ansible_facts.mounts | map(attribute='mount') | list }}"
+  tags:
+      - always
 
 
 - name: "PRELIM | AUDIT | List users accounts"
