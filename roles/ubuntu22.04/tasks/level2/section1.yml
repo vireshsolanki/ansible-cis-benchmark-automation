@@ -161,52 +161,6 @@
 
 ### 1.1.x.x Ensure separate partition exists for directories
 
-- name: "1.1.3.1 | AUDIT | Ensure /var is a separate partition"
-  block:
-      - name: "1.1.3.1 | AUDIT | Ensure /var is a separate partition | Absent"
-        ansible.builtin.debug:
-            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
-
-      - name: "1.1.3.1 | WARN | Ensure /var is a separate partition | warn_count"
-        ansible.builtin.import_tasks:
-            file: warning_facts.yml
-  vars:
-      warn_control_id: '1.1.3.1'
-      required_mount: '/var'
-  when:
-      - required_mount not in mount_names
-      - ubtu22cis_rule_1_1_3_1
-  tags:
-      - level2-server
-      - level2-workstation
-      - automated
-      - audit
-      - rule_1.1.3.1
-      - var
-
-- name: "1.1.4.1 | AUDIT | Ensure /var/tmp is a separate partition"
-  block:
-      - name: "1.1.4.1 | AUDIT | Ensure /var/tmp is a separate partition | Absent"
-        ansible.builtin.debug:
-            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
-
-      - name: "1.1.4.1 | WARN | Ensure /var/tmp is a separate partition | warn_count"
-        ansible.builtin.import_tasks:
-            file: warning_facts.yml
-  vars:
-      warn_control_id: '1.1.4.1'
-      required_mount: '/var/tmp'
-  when:
-      - required_mount not in mount_names
-      - ubtu22cis_rule_1_1_4_1
-  tags:
-      - level2-server
-      - level2-workstation
-      - automated
-      - audit
-      - rule_1.1.4.1
-      - var
-
 
 - name: "1.1.5.5  | AUDIT | Ensure /var/log/audit is a separate partition"
   block:

@@ -1,0 +1,25 @@
+{% set ubtu22cis_rule_1_1_4_1_options = [] %}
+{% set _ = ubtu22cis_rule_1_1_4_1_options.append('rw') %}
+{% set _ = ubtu22cis_rule_1_1_4_1_options.append('relatime') %}
+{% set _ = ubtu22cis_rule_1_1_4_1_options.append('seclabel') %}
+{% if ubtu22cis_rule_1_1_4_2 %}{% set _ = ubtu22cis_rule_1_1_4_1_options.append('nodev') %}{% endif %}
+{% if ubtu22cis_rule_1_1_4_3 %}{% set _ = ubtu22cis_rule_1_1_4_1_options.append('nosuid') %}{% endif %}
+{% if ubtu22cis_rule_1_1_4_4 %}{% set _ = ubtu22cis_rule_1_1_4_1_options.append('noexec') %}{% endif %}
+{% set ubtu22cis_rule_1_1_4_1_options = ubtu22cis_rule_1_1_4_1_options|join(',') %}
+[Unit]
+Description=Temporary Directory /var/tmp
+ConditionPathIsSymbolicLink=!/var/tmp
+DefaultDependencies=no
+Conflicts=umount.target
+Before=local-fs.target umount.target
+After=swap.target
+
+[Mount]
+Where=/var/tmp
+What=/dev/sdb
+Type=ext4
+Options={{ ubtu22cis_rule_1_1_4_1options }}
+
+# Make 'systemctl enable var.tmp.mount' work:
+[Install]
+WantedBy=local-fs.target
