@@ -10,8 +10,7 @@ After=swap.target
 What=tmpfs
 Where=/tmp
 Type=tmpfs
-
-Options: {{ tmp_options | unique | join(',') }}
+Options: {% if ubtu22cis_rule_1_1_2_2 %}nodev,{% endif %}{% if ubtu22cis_rule_1_1_2_3 %}noexec,{% endif %}{% if ubtu22cis_rule_1_1_2_4 %}nosuid{% endif %}
 
 [Install]
 WantedBy=local-fs.target
