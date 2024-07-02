@@ -217,13 +217,13 @@
      1.1.4.3 | Ensure nosuid option set on /var/tmp partition
      1.1.4.4 | Ensure noexec option set on /var/tmp partition
   ansible.builtin.template:
-     src: etc/systemd/system/var.tmp.mount.j2
-     dest: /etc/systemd/system/var.tmp.mount
+     src: etc/systemd/system/vartmp.mount.j2
+     dest: /etc/systemd/system/vartmp.mount
      owner: "root"
      group: "root"
      mode: "0644"
   notify:
-     - systemd restart and enable var.tmp.mount
+     - systemd restart and enable vartmp.mount
   when:
      - ubtu22cis_rule_1_1_4_2 or
        ubtu22cis_rule_1_1_4_3 or
