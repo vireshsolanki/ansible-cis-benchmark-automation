@@ -2,9 +2,9 @@
 {% set _ = ubtu22cis_rule_1_1_3_1_options.append('rw') %}
 {% set _ = ubtu22cis_rule_1_1_3_1_options.append('relatime') %}
 {% set _ = ubtu22cis_rule_1_1_3_1_options.append('seclabel') %}
-{% if ubtu22cis_rule_1_1_3_1_2 %}{% set _ = ubtu22cis_rule_1_1_3_1_options.append('nodev') %}{% endif %}
-{% if ubtu22cis_rule_1_1_3_1_3 %}{% set _ = ubtu22cis_rule_1_1_3_1_options.append('nosuid') %}{% endif %}
-{% set ubtu22cis_rule_1_1_3_1_4_options = ubtu22cis_rule_1_1_3_1_options|join(',') %}
+{% if ubtu22cis_rule_1_1_3_2 %}{% set _ = ubtu22cis_rule_1_1_3_1_options.append('nodev') %}{% endif %}
+{% if ubtu22cis_rule_1_1_3_3 %}{% set _ = ubtu22cis_rule_1_1_3_1_options.append('nosuid') %}{% endif %}
+{% set ubtu22cis_rule_1_1_3_4_options = ubtu22cis_rule_1_1_3_1_options|join(',') %}
 [Unit]
 Description=Temporary Directory /var
 ConditionPathIsSymbolicLink=!/var
