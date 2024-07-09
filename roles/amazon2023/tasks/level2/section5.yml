@@ -1,0 +1,684 @@
+---
+#####5.2.1.x
+- name: "5.2.1.1 | PATCH | Ensure auditd is installed"
+  block:
+      - name: "5.2.1.1 | PATCH | Ensure auditd is installed | Install auditd packages"
+        ansible.builtin.package:
+            name: audit
+            state: present
+        when: '"auditd" not in ansible_facts.packages'
+
+      - name: "5.2.1.1 | PATCH | Ensure auditd is installed | Install auditd-lib packages"
+        ansible.builtin.package:
+            name: audit-libs
+            state: present
+        when: '"auditd-lib" not in ansible_facts.packages'
+  when:
+      - amzn2023cis_rule_5_2_1_1
+      - not system_is_container
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.1.1
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+- name: "5.2.1.2 | PATCH | Ensure auditing for processes that start prior to auditd is enabled"
+  block:
+      - name: "5.2.1.2 | AUDIT | Ensure auditing for processes that start prior to auditd is enabled | Get GRUB_CMDLINE_LINUX"
+        ansible.builtin.shell: grep 'GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub | sed 's/.$//'
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amzn2023cis_5_2_1_2_grub_cmdline_linux
+
+      - name: "5.2.1.2 | PATCH | Ensure auditing for processes that start prior to auditd is enabled | Replace existing setting"
+        ansible.builtin.replace:
+            path: /etc/default/grub
+            regexp: 'audit=.'
+            replace: 'audit=1'
+        notify: Grub2cfg
+        when: "'audit=' in amzn2023cis_5_2_1_2_grub_cmdline_linux.stdout"
+
+      - name: "5.2.1.2 | PATCH | Ensure auditing for processes that start prior to auditd is enabled | Add audit setting if missing"
+        ansible.builtin.lineinfile:
+            path: /etc/default/grub
+            regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+            line: '{{ amzn2023cis_5_2_1_2_grub_cmdline_linux.stdout }} audit=1"'
+        notify: Grub2cfg
+        when: "'audit=' not in amzn2023cis_5_2_1_2_grub_cmdline_linux.stdout"
+  when:
+      - amzn2023cis_rule_5_2_1_2
+      - not system_is_container
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - grub
+      - rule_5.2.1.2
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_AU-12
+
+- name: "5.2.1.3 | PATCH | Ensure audit_backlog_limit is sufficient"
+  block:
+      - name: "5.2.1.3 | AUDIT | Ensure audit_backlog_limit is sufficient | Get GRUB_CMDLINE_LINUX"
+        ansible.builtin.shell: grep 'GRUB_CMDLINE_LINUX_DEFAULT=' /etc/default/grub | sed 's/.$//'
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amzn2023cis_5_2_1_3_grub_cmdline_linux
+
+      - name: "5.2.1.3 | PATCH | Ensure audit_backlog_limit is sufficient | Replace existing setting"
+        ansible.builtin.replace:
+            path: /etc/default/grub
+            regexp: 'audit_backlog_limit=\d+'
+            replace: 'audit_backlog_limit={{ amzn2023cis_audit_back_log_limit }}'
+        notify: Grub2cfg
+        when: "'audit_backlog_limit=' in amzn2023cis_5_2_1_3_grub_cmdline_linux.stdout"
+
+      - name: "5.2.1.3 | PATCH | Ensure audit_backlog_limit is sufficient | Add audit_backlog_limit setting if missing"
+        ansible.builtin.lineinfile:
+            path: /etc/default/grub
+            regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+            line: '{{ amzn2023cis_5_2_1_3_grub_cmdline_linux.stdout }} audit_backlog_limit={{ amzn2023cis_audit_back_log_limit }}"'
+        notify: Grub2cfg
+        when: "'audit_backlog_limit=' not in amzn2023cis_5_2_1_3_grub_cmdline_linux.stdout"
+  when:
+      - amzn2023cis_rule_5_2_1_3
+      - not system_is_container
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - grub
+      - rule_5.2.1.3
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_AU-12
+
+- name: "5.2.1.4 | PATCH | Ensure auditd service is enabled"
+  ansible.builtin.systemd:
+      name: auditd
+      state: started
+      enabled: true
+  when:
+      - amzn2023cis_rule_5_2_1_4
+      - not system_is_container
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.1.4
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_AU-12
+
+
+####5.2.2.x
+
+- name: "5.2.2.1 | PATCH | Ensure audit log storage size is configured"
+  ansible.builtin.lineinfile:
+      path: /etc/audit/auditd.conf
+      regexp: "^max_log_file( |=)"
+      line: "max_log_file = {{ amzn2023cis_max_log_file_size }}"
+  notify: Restart auditd
+  when:
+      - amzn2023cis_rule_5_2_2_1
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.2.1
+      - nist_sp800-53r5_AU-8
+
+- name: "5.2.2.2 | PATCH | Ensure audit logs are not automatically deleted"
+  ansible.builtin.lineinfile:
+      path: /etc/audit/auditd.conf
+      regexp: "^max_log_file_action"
+      line: "max_log_file_action = {{ amzn2023cis_auditd['max_log_file_action'] }}"
+  notify: Restart auditd
+  when:
+      - amzn2023cis_rule_5_2_2_2
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.2.2
+      - nist_sp800-53r5_AU-8
+
+- name: "5.2.2.3 | PATCH | Ensure system is disabled when audit logs are full"
+  ansible.builtin.lineinfile:
+      path: /etc/audit/auditd.conf
+      regexp: "{{ item.regexp }}"
+      line: "{{ item.line }}"
+  notify: Restart auditd
+  loop:
+      - { regexp: '^admin_space_left_action', line: 'admin_space_left_action = {{ amzn2023cis_auditd.admin_space_left_action }}' }
+      - { regexp: '^action_mail_acct', line: 'action_mail_acct = {{ amzn2023cis_auditd.action_mail_acct }}' }
+      - { regexp: '^space_left_action', line: 'space_left_action = {{ amzn2023cis_auditd.space_left_action }}' }
+  when:
+      - amzn2023cis_rule_5_2_2_3
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.2.3
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-8
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+- name: PATCH | Configure other keys for auditd.conf
+  ansible.builtin.lineinfile:
+      path: /etc/audit/auditd.conf
+      regexp: "^{{ item }}( |=)"
+      line: "{{ item }} = {{ amzn2023cis_auditd_extra_conf[item] }}"
+  loop: "{{ amzn2023cis_auditd_extra_conf.keys() }}"
+  notify: Restart auditd
+  when:
+      - amzn2023cis_auditd_extra_conf.keys() | length > 0
+  tags:
+      - level2-server
+      - patch
+      - auditd
+
+
+
+####5.2.3.x
+
+- name: "5.2.3.1 | PATCH | Ensure changes to system administration scope (sudoers) is collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_1
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.1
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.2 | PATCH | Ensure actions as another user are always logged"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_2
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.2
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.3 | PATCH | Ensure events that modify the sudo log file are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_3
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.3
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.4 | PATCH | Ensure events that modify date and time information are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_4
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.4
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_CM-6
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.5 | PATCH | Ensure events that modify the system's network environment are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_5
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.5
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_CM-6
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.6 | PATCH | Ensure use of privileged commands is collected"
+  block:
+      - name: "5.2.3.6 | PATCH | Ensure use of privileged commands is collected"
+        ansible.builtin.shell: for i in  $(df | grep '^/dev' | awk '{ print $NF }'); do find $i -xdev -type f -perm /6000 2>/dev/null; done
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: priv_procs
+
+      - name: "5.2.3.6 | PATCH | Ensure use of privileged commands is collected"
+        ansible.builtin.set_fact:
+            update_audit_template: true
+        notify: update auditd
+  when:
+      - amzn2023cis_rule_5_2_3_6
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.6
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.7 | PATCH | Ensure unsuccessful unauthorized file access attempts are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_7
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.7
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.8 | PATCH | Ensure events that modify user/group information are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_8
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.8
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.9 | PATCH | Ensure discretionary access control permission modification events are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_9
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.9
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_CM-6
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.10 | PATCH | Ensure successful file system mounts are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_10
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.10
+      - nist_sp800-53r5_CM-6
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.11 | PATCH | Ensure session initiation information is collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_11
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.11
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.12 | PATCH | Ensure login and logout events are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_12
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.12
+      - nist_sp800-53r5_AU-3
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.13 | PATCH | Ensure file deletion events by users are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_13
+  tags:
+      - level2-server
+      - auditd
+      - patch
+      - rule_5.2.3.13
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SC-7
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.14 | PATCH | Ensure events that modify the system's Mandatory Access Controls are collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_14
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.14
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_CM-6
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.15 | PATCH | Ensure successful and unsuccessful attempts to use the chcon command are recorded"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_15
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.15
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.16 | PATCH | Ensure successful and unsuccessful attempts to use the setfacl command are recorded"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_16
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.16
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.17 | PATCH | Ensure successful and unsuccessful attempts to use the chacl command are recorded"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_17
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.17
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.18 | PATCH | Ensure successful and unsuccessful attempts to use the usermod command are recorded"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_18
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.18
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.19 | PATCH | Ensure kernel module loading and unloading is collected"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_19
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.19
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_CM-6
+
+# All changes selected are managed by the POST audit and handlers to update
+- name: "5.2.3.20 | PATCH | Ensure the audit configuration is immutable"
+  ansible.builtin.set_fact:
+      update_audit_template: true
+  when:
+      - amzn2023cis_rule_5_2_3_20
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.3.20
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_AU-3
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_MP-2
+
+- name: "5.2.3.21 | AUDIT | Ensure the running and on disk configuration is the same"
+  ansible.builtin.debug:
+      msg:
+          - "Please run augenrules --load if you suspect there is a configuration that is not active"
+  when:
+      - amzn2023cis_rule_5_2_3_21
+  tags:
+      - level2-server
+      - manual
+      - patch
+      - auditd
+      - rule_5.2.3.21
+      - nist_sp800-53r5_AU-3
+
+- name: Auditd | 5.2.3 | Auditd controls updated
+  ansible.builtin.debug:
+      msg: "Auditd Controls handled in POST using template - updating /etc/auditd/rules.d/99_auditd.rules"
+  changed_when: false
+  when:
+      - update_audit_template
+
+
+
+####5.2.4.x
+
+
+- name: |
+      "5.2.4.1 | PATCH | Ensure audit log files are mode 0640 or less permissive"
+      "5.2.4.2 | PATCH | Ensure only authorized users own audit log files"
+      "5.2.4.3 | PATCH | Ensure only authorized groups are assigned ownership of audit log files"
+
+  block:
+      - name: "5.2.4.1 | AUDIT | Ensure audit log files are mode 0640 or less permissive | discover file"
+        ansible.builtin.shell: grep ^log_file /etc/audit/auditd.conf | awk '{ print $NF }'
+        changed_when: false
+        register: audit_discovered_logfile
+
+      - name: "5.2.4.1 | AUDIT | Ensure audit log files are mode 0640 or less permissive | stat file"
+        ansible.builtin.stat:
+            path: "{{ audit_discovered_logfile.stdout }}"
+        changed_when: false
+        register: auditd_logfile
+
+      - name: |
+            "5.2.4.1 | PATCH | Ensure audit log files are mode 0640 or less permissive"
+            "5.2.4.2 | PATCH | Ensure only authorized users own audit log files"
+            "5.2.4.3 | PATCH | Ensure only authorized groups are assigned ownership of audit log files"
+        ansible.builtin.file:
+            path: "{{ audit_discovered_logfile.stdout }}"
+            mode: "{% if auditd_logfile.stat.mode != '0600' %}0640{% endif %}"
+            owner: root
+            group: root
+  when:
+      - amzn2023cis_rule_5_2_4_1 or
+        amzn2023cis_rule_5_2_4_2 or
+        amzn2023cis_rule_5_2_4_3
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.1
+      - rule_5.2.4.2
+      - rule_5.2.4.3
+      - nist_sp800-53r5_AU-3
+
+- name: "5.2.4.4 | PATCH | Ensure the audit log directory is 0750 or more restrictive"
+  block:
+      - name: "5.2.4.4 | AUDIT | Ensure the audit log directory is 0750 or more restrictive | get current permissions"
+        ansible.builtin.stat:
+            path: "{{ audit_discovered_logfile.stdout | dirname }}"
+        register: auditlog_dir
+
+      - name: "5.2.4.4 | PATCH | Ensure the audit log directory is 0750 or more restrictive | set"
+        ansible.builtin.file:
+            path: "{{ audit_discovered_logfile.stdout | dirname }}"
+            state: directory
+            mode: '0750'
+        when: not auditlog_dir.stat.mode is match('07(0|5)0')
+  when:
+      - amzn2023cis_rule_5_2_4_4
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.4
+
+- name: "5.2.4.5 | PATCH | Ensure audit configuration files are 640 or more restrictive"
+  ansible.builtin.file:
+      path: "{{ item.path }}"
+      mode: g-wx,o-rwx
+  loop: "{{ auditd_conf_files.files | default([]) }}"
+  loop_control:
+      label: "{{ item.path }}"
+  when:
+      - amzn2023cis_rule_5_2_4_5
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.5
+      - nist_sp800-53r5_AU-3
+
+- name: "5.2.4.6 | PATCH | Ensure audit configuration files are owned by root"
+  ansible.builtin.file:
+      path: "{{ item.path }}"
+      owner: root
+  loop: "{{ auditd_conf_files.files }}"
+  loop_control:
+      label: "{{ item.path }}"
+  when:
+      - amzn2023cis_rule_5_2_4_6
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.6
+      - nist_sp800-53r5_AU-3
+
+- name: "5.2.4.7 | PATCH | Ensure audit configuration files belong to group root"
+  ansible.builtin.file:
+      path: "{{ item.path }}"
+      group: root
+  loop: "{{ auditd_conf_files.files }}"
+  loop_control:
+      label: "{{ item.path }}"
+  when:
+      - amzn2023cis_rule_5_2_4_7
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.7
+      - nist_sp800-53r5_AU-3
+
+- name: "5.2.4.8 | PATCH | Ensure audit tools are 755 or more restrictive"
+  block:
+      - name: "5.2.4.8 | AUDIT | Get audit binary file stat | get current mode"
+        ansible.builtin.stat:
+            path: "{{ item }}"
+        register: "audit_bins"
+        loop:
+            - /sbin/auditctl
+            - /sbin/aureport
+            - /sbin/ausearch
+            - /sbin/autrace
+            - /sbin/auditd
+            - /sbin/augenrules
+
+      - name: "5.2.4.8 | PATCH | Ensure audit tools are 755 or more restrictive | set if required"
+        ansible.builtin.file:
+            path: "{{ item.item }}"
+            mode: '0750'
+
+        loop: "{{ audit_bins.results }}"
+        loop_control:
+            label: "{{ item.item }}"
+        when: not item.stat.mode is match('07(0|5)0')
+  when:
+      - amzn2023cis_rule_5_2_4_8
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.8
+      - nist_sp800-53r5_AU-3
+
+- name: "5.2.4.9 | PATCH | Ensure audit tools are owned by root"
+  ansible.builtin.file:
+      path: "{{ item }}"
+      owner: root
+      group: root
+  loop:
+      - /sbin/auditctl
+      - /sbin/aureport
+      - /sbin/ausearch
+      - /sbin/autrace
+      - /sbin/auditd
+      - /sbin/augenrules
+  when:
+      - amzn2023cis_rule_5_2_4_9
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.9
+      - nist_sp800-53r5_AU-3
+
+- name: "5.2.4.10 | PATCH | Ensure audit tools belong to group root"
+  ansible.builtin.file:
+      path: "{{ item }}"
+      group: root
+  loop:
+      - /sbin/auditctl
+      - /sbin/aureport
+      - /sbin/ausearch
+      - /sbin/autrace
+      - /sbin/auditd
+      - /sbin/augenrules
+  when:
+      - amzn2023cis_rule_5_2_4_10
+  tags:
+      - level2-server
+      - patch
+      - auditd
+      - rule_5.2.4.10
+      - nist_sp800-53r5_AU-3

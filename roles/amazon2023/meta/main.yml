@@ -2,25 +2,28 @@
 
 galaxy_info:
     author: "EMC"
-    description: "Apply the Ubuntu 22 CIS benchmarks"
-    company: " Electromech Cloudtech Pvt Ltd"
+    description: "Apply the Amazon 2023 CIS"
+    company: "Electromech Cloudtech Pvt LTD"
     license: MIT
+    role_name: amazon2023_cis
     namespace: emc
-    role_name: ubuntu22_cis
-    min_ansible_version: 2.12.1
+    min_ansible_version: '2.10.1'
     platforms:
-        - name: Ubuntu
+        - name: "Amazon Linux"
           versions:
-              - jammy
+              - "2023"
     galaxy_tags:
         - system
         - security
-        - cis
+        - stig
         - hardening
         - benchmark
         - compliance
         - complianceascode
-        - ubuntu22
+        - disa
+        - amazonlinux
+        - ec2
+        - cis
 collections:
     - community.general
     - community.crypto

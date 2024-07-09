@@ -1,0 +1,20 @@
+---
+
+- name: "SECTION 1"
+  ansible.builtin.import_tasks:
+      file: section1.yml
+- name: "SECTION 2"
+  ansible.builtin.import_tasks:
+      file: section2.yml
+- name: "SECTION 3"
+  ansible.builtin.import_tasks:
+      file: section3.yml
+- name: "SECTION 4"
+  ansible.builtin.import_tasks:
+      file: section4.yml
+- name: "SECTION 5"
+  ansible.builtin.import_tasks:
+      file: section5.yml
+- name: "SECTION 6"
+  ansible.builtin.import_tasks:
+      file: section6.yml

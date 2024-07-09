@@ -11,3 +11,12 @@
     - role: ubuntu22.04
       tasks_from: tasks/level2/main.yml
       tags: ubuntu22.04-level2
+
+    - role: amazon2023
+      tasks_from: tasks/level1/main.yml
+      tags: amazon2023-level1
+    - role: amazon2023
+      tasks_from: tasks/level2/main.yml
+      tags: amazon2023-level2
+
+    

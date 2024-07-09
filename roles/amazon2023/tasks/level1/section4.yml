@@ -1,0 +1,1294 @@
+---
+#####4.1.x  
+- name: "4.1.1 | PATCH | Ensure cron daemon is enabled"
+  ansible.builtin.service:
+      name: crond
+      enabled: true
+  when:
+      - amzn2023cis_rule_4_1_1
+      
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.1
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.1.2 | PATCH | Ensure permissions on /etc/crontab are configured"
+  ansible.builtin.file:
+      path: /etc/crontab
+      owner: root
+      group: root
+      mode: '0600'
+  when:
+      - amzn2023cis_rule_4_1_2
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.2
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.3 | PATCH | Ensure permissions on /etc/cron.hourly are configured"
+  ansible.builtin.file:
+      path: /etc/cron.hourly
+      state: directory
+      owner: root
+      group: root
+      mode: '0700'
+  when:
+      - amzn2023cis_rule_4_1_3
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.3
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.4 | PATCH | Ensure permissions on /etc/cron.daily are configured"
+  ansible.builtin.file:
+      path: /etc/cron.daily
+      state: directory
+      owner: root
+      group: root
+      mode: '0700'
+  when:
+      - amzn2023cis_rule_4_1_4
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.4
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.5 | PATCH | Ensure permissions on /etc/cron.weekly are configured"
+  ansible.builtin.file:
+      path: /etc/cron.weekly
+      state: directory
+      owner: root
+      group: root
+      mode: '0700'
+  when:
+      - amzn2023cis_rule_4_1_5
+  tags:
+      - level1-server
+      - patch
+      - rule_4.1.5
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.6 | PATCH | Ensure permissions on /etc/cron.monthly are configured"
+  ansible.builtin.file:
+      path: /etc/cron.monthly
+      state: directory
+      owner: root
+      group: root
+      mode: '0700'
+  when:
+      - amzn2023cis_rule_4_1_6
+  tags:
+      - level1-server
+      - patch
+      - rule_4.1.6
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.7 | PATCH | Ensure permissions on /etc/cron.d are configured"
+  ansible.builtin.file:
+      path: /etc/cron.d
+      state: directory
+      owner: root
+      group: root
+      mode: '0700'
+  when:
+      - amzn2023cis_rule_4_1_7
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.7
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.8 | PATCH | Ensure cron is restricted to authorized users"
+  block:
+      - name: "4.1.8 | PATCH | Ensure cron is restricted to authorized users | Remove cron.deny"
+        ansible.builtin.file:
+            path: /etc/cron.deny
+            state: absent
+
+      - name: "4.1.8 | PATCH | Ensure cron is restricted to authorized users | Check if cron.allow exists"
+        ansible.builtin.stat:
+            path: "/etc/cron.allow"
+        register: amzn2023cis_5_1_8_cron_allow_state
+
+      - name: "4.1.8 | PATCH | Ensure cron is restricted to authorized users | Ensure cron.allow is restricted to authorized users"
+        ansible.builtin.file:
+            path: /etc/cron.allow
+            state: '{{ "file" if  amzn2023cis_5_1_8_cron_allow_state.stat.exists else "touch" }}'
+            owner: root
+            group: root
+            mode: '0600'
+  when:
+      - amzn2023cis_rule_4_1_8
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.8
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.1.9 | PATCH | Ensure at is restricted to authorized users"
+  block:
+      - name: "4.1.9 | PATCH | Ensure at is restricted to authorized users | Remove at.deny"
+        ansible.builtin.file:
+            path: /etc/at.deny
+            state: absent
+
+      - name: "4.1.9 | PATCH | Ensure at is restricted to authorized users | Check if at.allow exists"
+        ansible.builtin.stat:
+            path: "/etc/at.allow"
+        register: amzn2023cis_5_1_9_at_allow_state
+
+      - name: "4.1.9 | PATCH | Ensure at is restricted to authorized users | Ensure at.allow is restricted to authorized users"
+        ansible.builtin.file:
+            path: /etc/at.allow
+            state: '{{ "file" if  amzn2023cis_5_1_9_at_allow_state.stat.exists else "touch" }}'
+            owner: root
+            group: root
+            mode: '0600'
+  when:
+      - amzn2023cis_rule_4_1_9
+  tags:
+      - level1-server
+      - patch
+      - cron
+      - rule_4.1.9
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+
+
+###4.2.x
+
+
+- name: "4.2.1 | PATCH | Ensure permissions on /etc/ssh/sshd_config are configured"
+  ansible.builtin.file:
+      path: "/etc/ssh/sshd_config"
+      owner: root
+      group: root
+      mode: '0600'
+  when:
+      - amzn2023cis_rule_4_2_1
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - permissions
+      - rule_4.2.1
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.2.2 | PATCH | Ensure permissions on SSH private host key files are configured"
+  block:
+      - name: "4.2.2 | AUDIT | Ensure permissions on SSH private host key files are configured | Find the SSH private host keys"
+        ansible.builtin.find:
+            paths: /etc/ssh
+            patterns: 'ssh_host_*_key'
+            recurse: true
+            file_type: any
+        register: amzn2023cis_4_2_2_ssh_private_host_key
+
+      - name: "4.2.2 | PATCH | Ensure permissions on SSH private host key files are configured | Set permissions on SSH private host keys"
+        ansible.builtin.file:
+            path: "{{ item.path }}"
+            owner: root
+            group: root
+            mode: '0600'
+        loop: "{{ amzn2023cis_4_2_2_ssh_private_host_key.files }}"
+        loop_control:
+            label: "{{ item.path }}"
+  when:
+      - amzn2023cis_rule_4_2_2
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - permissions
+      - rule_4.2.2
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.2.3 | PATCH | Ensure permissions on SSH public host key files are configured"
+  block:
+      - name: "4.2.3 | AUDIT | Ensure permissions on SSH public host key files are configured | Find the SSH public host keys"
+        ansible.builtin.find:
+            paths: /etc/ssh
+            patterns: 'ssh_host_*_key.pub'
+            recurse: true
+            file_type: any
+        register: amzn2023cis_4_2_3_ssh_public_host_key
+
+      - name: "4.2.3 | PATCH | Ensure permissions on SSH public host key files are configured | Set permissions on SSH public host keys"
+        ansible.builtin.file:
+            path: "{{ item.path }}"
+            owner: root
+            group: root
+            mode: '0644'
+        loop: "{{ amzn2023cis_4_2_3_ssh_public_host_key.files }}"
+        loop_control:
+            label: "{{ item.path }}"
+  when:
+      - amzn2023cis_rule_4_2_3
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.3
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.2.4 | PATCH | Ensure SSH access is limited"
+  block:
+      - name: "4.2.4 | PATCH | Ensure SSH access is limited | Add line to sshd_config for allowusers"
+        ansible.builtin.lineinfile:
+            path: "{{ amzn2023cis_sshd_config_file }}"
+            regexp: "^AllowUsers"
+            line: "AllowUsers {{ amzn2023cis_sshd['allowusers'] }}"
+            validate: sshd -t -f %s
+        notify: Restart sshd
+        when: "amzn2023cis_sshd['allowusers']|default('') | length > 0"
+
+      - name: "4.2.4 | PATCH | Ensure SSH access is limited | Add line to sshd_config for allowgroups"
+        ansible.builtin.lineinfile:
+            path: "{{ amzn2023cis_sshd_config_file }}"
+            regexp: "^AllowGroups"
+            line: "AllowGroups {{ amzn2023cis_sshd['allowgroups'] }}"
+            validate: sshd -t -f %s
+        notify: Restart sshd
+        when: "amzn2023cis_sshd['allowgroups']|default('') | length > 0"
+
+      - name: "4.2.4 | PATCH | Ensure SSH access is limited | Add line to sshd_config for denyusers"
+        ansible.builtin.lineinfile:
+            path: "{{ amzn2023cis_sshd_config_file }}"
+            regexp: "^DenyUsers"
+            line: "DenyUsers {{ amzn2023cis_sshd['denyusers'] }}"
+            validate: sshd -t -f %s
+        notify: Restart sshd
+        when: "amzn2023cis_sshd['denyusers']|default('') | length > 0"
+
+      - name: "4.2.4 | PATCH | Ensure SSH access is limited | Add line to sshd_config for denygroups"
+        ansible.builtin.lineinfile:
+            path: "{{ amzn2023cis_sshd_config_file }}"
+            regexp: "^DenyGroups"
+            line: "DenyGroups {{ amzn2023cis_sshd['denygroups'] }}"
+            validate: sshd -t -f %s
+        notify: Restart sshd
+        when: "amzn2023cis_sshd['denygroups']|default('') | length > 0"
+  when:
+      - amzn2023cis_rule_4_2_4
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.4
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.2.5 | PATCH | Ensure SSH LogLevel is appropriate"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#LogLevel|^LogLevel"
+      line: 'LogLevel {{ amzn2023cis_ssh_loglevel }}'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_5
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - sshs
+      - rule_4.2.5
+      - nist_sp800-53r5_AU-2
+      - nist_sp800-53r5_AU-12
+      - nist_sp800-53r5_SI-5
+
+- name: "4.2.6 | PATCH | Ensure SSH PAM is enabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#UsePAM|^UsePAM"
+      line: 'UsePAM yes'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_6
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.6
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.7 | PATCH | Ensure SSH root login is disabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#PermitRootLogin|^PermitRootLogin"
+      line: 'PermitRootLogin no'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_7
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.7
+      - nist_sp800-53r5_AC-6
+
+- name: "4.2.8 | PATCH | Ensure SSH HostbasedAuthentication is disabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#HostbasedAuthentication|^HostbasedAuthentication"
+      line: 'HostbasedAuthentication no'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_8
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.8
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.9 | PATCH | Ensure SSH PermitEmptyPasswords is disabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#PermitEmptyPasswords|^PermitEmptyPasswords"
+      line: 'PermitEmptyPasswords no'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_9
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.9
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.10 | PATCH | Ensure SSH PermitUserEnvironment is disabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#PermitUserEnvironment|^PermitUserEnvironment"
+      line: 'PermitUserEnvironment no'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_10
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.10
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.11 | PATCH | Ensure SSH IgnoreRhosts is enabled"
+  ansible.builtin.lineinfile:
+      path: "{{ amzn2023cis_sshd_config_file }}"
+      regexp: "^#IgnoreRhosts|^IgnoreRhosts"
+      line: 'IgnoreRhosts yes'
+      validate: sshd -t -f %s
+  when:
+      - amzn2023cis_rule_4_2_11
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.11
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+  
+- name: "4.2.14 | PATCH | Ensure system-wide crypto policy is not over-ridden"
+  block:
+      - name: "4.2.14 | AUDIT | Ensure system-wide crypto policy is not over-ridden"
+        ansible.builtin.shell: grep -i '^\s*CRYPTO_POLICY=' /etc/sysconfig/sshd
+        changed_when: false
+        failed_when: ( ssh_crypto_discovery.rc not in [ 0, 1 ] )
+        register: ssh_crypto_discovery
+
+      - name: "4.2.14 | PATCH | Ensure system-wide crypto policy is not over-ridden"
+        ansible.builtin.shell: sed -ri "s/^\s*(CRYPTO_POLICY\s*=.*)$/# \1/" /etc/sysconfig/sshd
+        notify: Restart sshd
+        when: ssh_crypto_discovery.stdout | length > 0
+  when:
+      - amzn2023cis_rule_4_2_14
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.14
+      - nist_sp800-53r5_SC-8
+      - nist_sp800-53r5_AC-17
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.15 | PATCH | Ensure SSH warning banner is configured"
+  ansible.builtin.lineinfile:
+      path: "{{ amzn2023cis_sshd_config_file }}"
+      regexp: '^Banner'
+      line: 'Banner /etc/issue.net'
+  when:
+      - amzn2023cis_rule_4_2_15
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.15
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.16 | PATCH | Ensure SSH MaxAuthTries is set to 4 or less"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: '^(#)?MaxAuthTries \d'
+      line: 'MaxAuthTries {{ amzn2023cis_ssh_maxauthtries }}'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_16
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.16
+      - nist_sp800-53r5_AU-3
+
+- name: "4.2.17 | PATCH | Ensure SSH MaxStartups is configured"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#MaxStartups|^MaxStartups"
+      line: 'MaxStartups 10:30:60'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_17
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.17
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.18 | PATCH | Ensure SSH MaxSessions is set to 10 or less"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#MaxSessions|^MaxSessions"
+      line: 'MaxSessions {{ amzn2023cis_ssh_maxsessions }}'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_18
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.18
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.2.19 | PATCH | Ensure SSH LoginGraceTime is set to one minute or less"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#LoginGraceTime|^LoginGraceTime"
+      line: "LoginGraceTime {{ amzn2023cis_sshd['logingracetime'] }}"
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_19
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.19
+      - nist_sp800-53r5_CM-6
+
+- name: "4.2.20 | PATCH | Ensure SSH Idle Timeout Interval is configured"
+  block:
+      - name: "4.2.20 | PATCH | Ensure SSH Idle Timeout Interval is configured | Add line in sshd_config for ClientAliveInterval"
+        ansible.builtin.lineinfile:
+            path: "{{ item.path }}"
+            regexp: '^ClientAliveInterval'
+            line: "ClientAliveInterval {{ amzn2023cis_sshd['clientaliveinterval'] }}"
+            validate: sshd -t -f %s
+        with_items:
+            - "{{ sshd_d_conf_files.files }}"
+            - "{{ main_sshd_cfg.stat }}"
+
+      - name: "4.2.20 | PATCH | Ensure SSH Idle Timeout Interval is configured | Ensure SSH ClientAliveCountMax set to <= 3"
+        ansible.builtin.lineinfile:
+            path: "{{ item.path }}"
+            regexp: '^ClientAliveCountMax'
+            line: "ClientAliveCountMax {{ amzn2023cis_sshd['clientalivecountmax'] }}"
+            validate: sshd -t -f %s
+        with_items:
+            - "{{ sshd_d_conf_files.files }}"
+            - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_20
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level1-server
+      - patch
+      - ssh
+      - rule_4.2.20
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+###4.3.x
+
+
+- name: "4.3.1 | PATCH | Ensure sudo is installed"
+  ansible.builtin.package:
+      name: sudo
+      state: present
+  when:
+      - amzn2023cis_rule_4_3_1
+  tags:
+      - level1-server
+      - patch
+      - sudo
+      - rule_4.3.1
+      - nist_sp800-53r5_AC-6
+
+- name: "4.3.2 | PATCH | Ensure sudo commands use pty"
+  ansible.builtin.lineinfile:
+      path: /etc/sudoers
+      line: "Defaults    use_pty"
+      validate: '/usr/sbin/visudo -cf %s'
+  when:
+      - amzn2023cis_rule_4_3_2
+  tags:
+      - level1-server
+      - patch
+      - sudo
+      - rule_4.3.2
+
+- name: "4.3.3 | PATCH | Ensure sudo log file exists"
+  ansible.builtin.lineinfile:
+      path: /etc/sudoers
+      regexp: '^Defaults    logfile='
+      line: 'Defaults    logfile="{{ amzn2023cis_sudolog_location }}"'
+      validate: '/usr/sbin/visudo -cf %s'
+  when:
+      - amzn2023cis_rule_4_3_3
+  tags:
+      - level1-server
+      - patch
+      - sudo
+      - rule_4.3.3
+
+- name: "4.3.4 | PATCH | Ensure re-authentication for privilege escalation is not disabled globally"
+  ansible.builtin.replace:
+      path: "{{ item }}"
+      regexp: '^([^#].*)!authenticate(.*)'
+      replace: '\1authenticate\2'
+      validate: '/usr/sbin/visudo -cf %s'
+  loop: "{{ amzn2023cis_sudoers_files.stdout_lines }}"
+  when:
+      - amzn2023cis_rule_4_3_4
+  tags:
+      - level1-server
+      - patch
+      - sudo
+      - rule_4.3.4
+      - nist_sp800-53r5_AC-6
+
+- name: "4.3.5 | PATCH | Ensure sudo authentication timeout is configured correctly"
+  block:
+      - name: "4.3.5 | AUDIT | Ensure sudo authentication timeout is configured correctly | Get files with timeout set"
+        ansible.builtin.shell: grep -is 'timestamp_timeout' /etc/sudoers /etc/sudoers.d/* | cut -d":" -f1 | uniq | sort
+        changed_when: false
+        failed_when: false
+        register: amzn2023cis_4_3_5_timeout_files
+
+      - name: "4.3.5 | PATCH | Ensure sudo authentication timeout is configured correctly | Set value if no results"
+        ansible.builtin.lineinfile:
+            path: /etc/sudoers
+            regexp: 'Defaults timestamp_timeout='
+            line: "Defaults timestamp_timeout={{ amzn2023cis_sudo_timestamp_timeout }}"
+            validate: '/usr/sbin/visudo -cf %s'
+        when: amzn2023cis_4_3_5_timeout_files.stdout | length == 0
+
+      - name: "4.3.5 | PATCH | Ensure sudo authentication timeout is configured correctly | Set value if has results"
+        ansible.builtin.replace:
+            path: "{{ item }}"
+            regexp: 'timestamp_timeout=(\d+)'
+            replace: "timestamp_timeout={{ amzn2023cis_sudo_timestamp_timeout }}"
+            validate: '/usr/sbin/visudo -cf %s'
+        loop: "{{ amzn2023cis_4_3_5_timeout_files.stdout_lines }}"
+        when: amzn2023cis_4_3_5_timeout_files.stdout | length > 0
+  when:
+      - amzn2023cis_rule_4_3_5
+  tags:
+      - level1-server
+      - patch
+      - sudo
+      - rule_4.3.5
+      - nist_sp800-53r5_AC-6
+
+- name: "4.3.6 | PATCH | Ensure access to the su command is restricted"
+  block:
+      - name: "4.3.6 | PATCH | Ensure access to the su command is restricted | Ensure sugroup exists"
+        ansible.builtin.group:
+            name: "{{ amzn2023cis_sugroup }}"
+            state: present
+        register: amzn2023cis_4_3_6_sugroup
+
+      - name: "4.3.6 | PATCH | Ensure access to the su command is restricted | remove users from group"
+        ansible.builtin.lineinfile:
+            path: /etc/group
+            regexp: '^{{ amzn2023cis_sugroup }}(:.:.*:).*$'
+            line: '{{ amzn2023cis_sugroup }}\g<1>'
+            backrefs: true
+
+      - name: "4.3.6 | PATCH | Ensure access to the su command is restricted | Setting pam_wheel to use_uid"
+        ansible.builtin.lineinfile:
+            path: /etc/pam.d/su
+            regexp: '^(#)?auth\s+required\s+pam_wheel\.so'
+            line: 'auth           required        pam_wheel.so use_uid group={{ amzn2023cis_sugroup }}'
+  when:
+      - amzn2023cis_rule_4_3_6
+  tags:
+      - level1-server
+      - patch
+      - sudo
+      - rule_4.3.6
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+
+###4.4.x
+
+
+- name: "4.4.1 | PATCH | Ensure custom authselect profile is used"
+  block:
+      - name: "4.4.1 | AUDIT | Ensure custom authselect profile is used | Gather profiles"
+        ansible.builtin.shell: 'authselect current | grep "Profile ID: custom/"'
+        failed_when: false
+        changed_when: false
+        check_mode: false
+        register: amzn2023cis_4_4_1_profiles
+
+      - name: "4.4.1 | AUDIT | Ensure custom authselect profile is used | Show profiles"
+        ansible.builtin.debug:
+            msg:
+                - "Below are the current custom profiles"
+                - "{{ amzn2023cis_4_4_1_profiles.stdout_lines }}"
+
+      - name: "4.4.1 | PATCH | Ensure custom authselect profile is used | Create custom profiles"
+        ansible.builtin.shell: authselect create-profile {{ amzn2023cis_authselect['custom_profile_name'] }} -b {{ amzn2023cis_authselect['default_file_to_copy'] }}
+        when: amzn2023cis_authselect_custom_profile_create
+  when:
+      - amzn2023cis_rule_4_4_1
+  tags:
+      - level1-server
+      - manual
+      - patch
+      - authselect
+      - rule_4.4.1
+      - nist_sp800-53r5_CA-5
+
+- name: "4.4.2 | PATCH | Ensure authselect includes with-faillock | with auth select profile"
+  block:
+      - name: "4.4.2 | AUDIT | Ensure authselect includes with-faillock | Gather profiles and enabled features"
+        ansible.builtin.shell: "authselect current | grep with-faillock"
+        failed_when: false
+        changed_when: false
+        check_mode: false
+        register: amzn2023cis_4_4_2_profiles_faillock
+
+      - name: "4.4.2 | AUDIT | Ensure authselect includes with-faillock | Show profiles"
+        ansible.builtin.debug:
+            msg:
+                - "Below are the current custom profiles"
+                - "{{ amzn2023cis_4_4_2_profiles_faillock.stdout_lines }}"
+
+      - name: "4.4.2 | PATCH | Ensure authselect includes with-faillock | Create custom profiles"
+        ansible.builtin.shell: "authselect select custom/{{ amzn2023cis_authselect['custom_profile_name'] }} with-faillock"
+        when: amzn2023cis_authselect_custom_profile_select
+
+      - name: 4.4.2 | PATCH | Ensure authselect includes with-faillock | not auth select profile"
+        ansible.builtin.lineinfile:
+            path: "/etc/pam.d/password-auth"
+            regexp: "{{ item.regexp }}"
+            line: "{{ item.line }}"
+            insertbefore: "{{ item.before }}"
+        loop:
+            - { 'regexp': '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', 'line': 'auth            required       pam_faillock.so preauth silent deny={{ amzn2023cis_pam_faillock.deny }} unlock_time={{ amzn2023cis_pam_faillock.unlock_time }}', 'before':'^auth\s+sufficient\s+pam_unix.so try_first_pass'}
+            - { 'regexp': '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', 'line': 'auth            required       pam_faillock.so authfail deny={{ amzn2023cis_pam_faillock.deny }} unlock_time={{ amzn2023cis_pam_faillock.unlock_time }}', 'before':'^auth\s+required\s+pam_deny.so'}
+            - { 'regexp': '^account\s+required\s+pam_faillock.so', 'line': 'account      required       pam_faillock.so', 'before':'^account     required      pam_unix.so'}
+        when:
+            - amzn2023cis_add_faillock_without_authselect
+            - amzn2023cis_4_4_2_risks == 'ACCEPT'
+
+      - name: 4.4.2 | PATCH | Ensure authselect includes with-faillock | not auth select profile"
+        ansible.builtin.lineinfile:
+            path: "/etc/pam.d/system-auth"
+            regexp: "{{ item.regexp }}"
+            line: "{{ item.line }}"
+            insertbefore: "{{ item.before | default(omit)}}"
+            insertafter: "{{ item.after | default(omit)}}"
+        loop:
+            - { 'regexp': '^auth\s+required\s+pam_faillock.so preauth silent deny=.*unlock_time=.*', 'line':'auth        required      pam_faillock.so preauth silent deny={{ amzn2023cis_pam_faillock.deny }} unlock_time={{ amzn2023cis_pam_faillock.unlock_time }}', 'before':'^auth\s+sufficient\s+pam_unix.so try_first_pass'}
+            - { 'regexp': '^auth\s+required\s+pam_faillock.so authfail deny=.*unlock_time=.*', 'line': 'auth        required      pam_faillock.so authfail deny={{ amzn2023cis_pam_faillock.deny }} unlock_time={{ amzn2023cis_pam_faillock.unlock_time }}', 'before':'^auth\s+required\s+pam_deny.so'}
+            - { 'regexp': '^account\s+required\s+pam_faillock.so', 'line': 'account     required      pam_faillock.so', 'before':'^account     required      pam_unix.so'}
+        when:
+            - amzn2023cis_add_faillock_without_authselect
+            - amzn2023cis_4_4_2_risks == 'ACCEPT'
+  when:
+      - amzn2023cis_rule_4_4_2
+  tags:
+      - level1-server
+      - patch
+      - authselect
+      - rule_4.4.2
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+###4.5.x
+
+- name: "4.5.1 | PATCH | Ensure password creation requirements are configured"
+  block:
+      - name: "4.5.1 | PATCH | Ensure password creation requirements are configured | Set pwquality config settings"
+        ansible.builtin.lineinfile:
+            path: /etc/security/pwquality.conf
+            regexp: ^{{ item.name }}
+            line: "{{ item.name }} = {{ item.value }}"
+        loop:
+            - { name: minlen, value: "{{ amzn2023cis_pam_password.minlen }}" }
+            - { name: minclass, value: "{{ amzn2023cis_pam_password.minclass }}" }
+
+      - name: "4.5.1 | PATCH | Ensure password creation requirements are configured | Set system-auth retry settings"
+        ansible.builtin.lineinfile:
+            path: /etc/pam.d/system-auth
+            regexp: '^password\s*requisite\s*pam_pwquality.so'
+            line: "password    requisite     pam_pwquality.so try_first_pass local_users_only enforce_for_root retry=3"
+            insertbefore: '^#?password ?'
+
+      - name: "4.5.1 | PATCH | Ensure password creation requirements are configured | Set system-auth retry settings"
+        ansible.builtin.lineinfile:
+            path: /etc/pam.d/password-auth
+            regexp: '^password\s*requisite\s*pam_pwquality.so'
+            line: "password    requisite     pam_pwquality.so try_first_pass local_users_only enforce_for_root retry=3"
+            insertbefore: '^#?password ?'
+  when:
+      - amzn2023cis_rule_4_5_1
+  tags:
+      - level1-server
+      - patch
+      - rule_4.5.1
+      - nist_sp800-53r5_IA-5
+
+- name: "4.5.2 | PATCH | Ensure lockout for failed password attempts is configured"
+  block:
+      - name: "4.5.2 | PATCH | Ensure lockout for failed password attempts is configured | Set faillock.conf configs"
+        ansible.builtin.lineinfile:
+            path: /etc/security/faillock.conf
+            regexp: "{{ item.regexp }}"
+            line: "{{ item.line }}"
+        loop:
+            - { regexp: '^\s*deny\s*=\s*[1-5]\b', line: 'deny = {{ amzn2023cis_pam_faillock.deny }}' }
+            - { regexp: '^\s*unlock_time\s*=\s*(0|9[0-9][0-9]|[1-9][0-9][0-9][0-9]+)\b', line: 'unlock_time = {{ amzn2023cis_pam_faillock.unlock_time }}' }
+      - name: "4.5.2 | PATCH | Ensure lockout for failed password attempts is configured | Set preauth"
+        ansible.builtin.lineinfile:
+            path: "{{ item }}"
+            regexp: '^auth\s*(sufficient|required)\s*pam_faillock.so\s*preauth(.*)'
+            line: "auth    required     pam_faillock.so preauth silent audit deny={{ amzn2023cis_pam_faillock.deny }} unlock_time={{ amzn2023cis_pam_faillock.unlock_time}}"
+            insertafter: 'auth\s*(sufficient|required)\s*pam_env.so$'
+        loop:
+            - "/etc/pam.d/system-auth"
+            - "/etc/pam.d/password-auth"
+      - name: "4.5.2 | PATCH | Ensure lockout for failed password attempts is configured | Set authfail"
+        ansible.builtin.lineinfile:
+            path: "{{ item }}"
+            regexp: '^auth\s*(sufficient|required)\s*pam_faillock.so\s*authfail(.*)'
+            line: "auth    required     pam_faillock.so authfail audit deny={{ amzn2023cis_pam_faillock.deny }} unlock_time={{ amzn2023cis_pam_faillock.unlock_time}}"
+            insertbefore: 'auth\s*(sufficient|required)\s*pam_deny.so$'
+        loop:
+            - "/etc/pam.d/system-auth"
+            - "/etc/pam.d/password-auth"
+      - name: "4.5.2 | PATCH | Ensure lockout for failed password attempts is configured | Load account faillock.so"
+        ansible.builtin.lineinfile:
+            path: "{{ item }}"
+            regexp: '^account\s*(sufficient|required)\s*pam_faillock.so$'
+            line: "account    required     pam_faillock.so"
+            insertbefore: '^account\s*(sufficient|required)\s*pam_unix.so$'
+        loop:
+            - "/etc/pam.d/system-auth"
+            - "/etc/pam.d/password-auth"
+  when:
+      - amzn2023cis_rule_4_5_2
+  tags:
+      - level1-server
+      - patch
+      - rule_4.5.2
+      - nist_sp800-53r5_AC-1
+      - nist_sp800-53r5_AC-2
+
+- name: "4.5.3 | PATCH | Ensure password reuse is limited | pwquality"
+  ansible.builtin.lineinfile:
+      path: /etc/pam.d/system-auth
+      line: "password    requisite     pam_pwhistory.so try_first_pass enforce_for_root retry=3 remember={{ amzn2023cis_pam_faillock.remember }}"
+      insertafter: '^password\s*requisite\s*pam_pwquality.so'
+  when:
+      - amzn2023cis_rule_4_5_3
+  tags:
+      - level1-server
+      - patch
+      - rule_4.5.3
+      - nist_sp800-53r5_IA-5
+
+- name: "4.5.4 | PATCH | Ensure password hashing algorithm is SHA-512"
+  block:
+      - name: "4.5.4 | PATCH | Ensure password hashing algorithm is SHA-512 | libuser.conf"
+        ansible.builtin.replace:
+            path: /etc/libuser.conf
+            regexp: '^crypt_style\s*=\s*.*$'
+            replace: 'crypt_style = sha512'
+
+      - name: "4.5.4 | PATCH | Ensure password hashing algorithm is SHA-512 | login.defs"
+        ansible.builtin.replace:
+            path: /etc/login.defs
+            regexp: '^ENCRYPT_METHOD.*'
+            replace: 'ENCRYPT_METHOD SHA512'
+
+      - name: "4.5.4 | PATCH | Ensure password hashing algorithm is SHA-512 | password-auth"
+        ansible.builtin.replace:
+            path: /etc/pam.d/password-auth
+            regexp: '^password\s*sufficient\s*pam_unix.so.*$'
+            replace: 'password    sufficient    pam_unix.so sha512 shadow try_first_pass use_authtok remember={{ amzn2023cis_pam_faillock.remember }}'
+
+      - name: "4.5.4 | PATCH | Ensure password hashing algorithm is SHA-512 | system-auth"
+        ansible.builtin.replace:
+            path: /etc/pam.d/system-auth
+            regexp: '^password\s*sufficient\s*pam_unix.so.*$'
+            replace: 'password    sufficient     pam_unix.so sha512 shadow try_first_pass use_authtok remember={{ amzn2023cis_pam_faillock.remember }}'
+  when:
+      - amzn2023cis_rule_4_5_4
+  tags:
+      - level1-server
+      - patch
+      - rule_4.5.4
+      - nist_sp800-53r5_IA-5
+
+#####4.6.1.x
+
+
+- name: "4.6.1.1 | PATCH | Ensure password expiration is 365 days or less"
+  block:
+      - name: "4.6.1.1 | PATCH | Ensure password expiration is 365 days or less"
+        ansible.builtin.lineinfile:
+            path: /etc/login.defs
+            regexp: '^PASS_MAX_DAYS'
+            line: "PASS_MAX_DAYS {{ amzn2023cis_pass['max_days'] }}"
+
+      - name: "4.6.1.1 | AUDIT | Ensure password expiration is 365 days or less | Get existing users PASS_MAX_DAYS"
+        ansible.builtin.shell: "awk -F: '(/^[^:]+:[^!*]/ && ($5> {{ amzn2023cis_pass['max_days'] }} || $5< {{ amzn2023cis_pass['max_days'] }} || $5 == -1)){print $1}' /etc/shadow"
+        changed_when: false
+        failed_when: false
+        register: discovered_max_days
+
+      - name: "4.6.1.1 | PATCH | Ensure password expiration is 365 days or less | Set existing users PASS_MAX_DAYS"
+        ansible.builtin.user:
+            name: "{{ item }}"
+            password_expire_max: "{{ amzn2023cis_pass['max_days'] }}"
+        loop: "{{ discovered_max_days.stdout_lines }}"
+        when:
+            - discovered_max_days.stdout_lines | length > 0
+            - item in discovered_interactive_usernames.stdout
+            - amzn2023cis_force_user_maxdays
+
+  when:
+      - amzn2023cis_rule_4_6_1_1
+  tags:
+      - level1-server
+      - patch
+      - password
+      - rule_4.6.1.1
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.6.1.2 | PATCH | Ensure minimum days between password changes is configured"
+  block:
+      - name: "4.6.1.2 | PATCH | Ensure minimum days between password changes is configured | set login.defs"
+        ansible.builtin.lineinfile:
+            path: /etc/login.defs
+            regexp: '^PASS_MIN_DAYS'
+            line: "PASS_MIN_DAYS {{ amzn2023cis_pass['min_days'] }}"
+
+      - name: "4.6.1.2 | AUDIT | Ensure minimum days between password changes is configured | Get existing users PASS_MIN_DAYS"
+        ansible.builtin.shell: "awk -F: '/^[^:]+:[^!*]/ && $4< {{ amzn2023cis_pass['min_days'] }} {print $1}' /etc/shadow"
+        changed_when: false
+        failed_when: false
+        register: discovered_min_days
+
+      - name: "4.6.1.2 | PATCH | Ensure minimum days between password changes is configured | Set existing users PASS_MIN_DAYS"
+        ansible.builtin.user:
+            name: "{{ item }}"
+            password_expire_max: "{{ amzn2023cis_pass['min_days'] }}"
+        loop: "{{ discovered_min_days.stdout_lines }}"
+        when:
+            - discovered_min_days.stdout_lines | length > 0
+            - item in discovered_interactive_usernames.stdout
+            - amzn2023cis_force_user_mindays
+
+  when:
+      - amzn2023cis_rule_4_6_1_2
+  tags:
+      - level1-server
+      - patch
+      - password
+      - rule_4.6.1.2
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.6.1.3 | PATCH | Ensure password expiration warning days is 7 or more"
+  block:
+      - name: "4.6.1.3 | PATCH | Ensure password expiration warning days is 7 or more | set login.defs"
+        ansible.builtin.lineinfile:
+            path: /etc/login.defs
+            regexp: '^PASS_WARN_AGE'
+            line: "PASS_WARN_AGE {{ amzn2023cis_pass['warn_age'] }}"
+
+      - name: "4.6.1.3 | AUDIT | Ensure password expiration warning days is 7 or more | Get existing users WARN_DAYS"
+        ansible.builtin.shell: "awk -F: '/^[^:]+:[^!*]/ && $6< {{ amzn2023cis_pass['warn_age'] }} {print $1}' /etc/shadow"
+        changed_when: false
+        failed_when: false
+        register: discovered_warn_days
+
+      - name: "4.6.1.3 | PATCH | Ensure password expiration warning days is 7 or more | Set existing users WARN_DAYS"
+        ansible.builtin.shell: "chage --warndays {{ amzn2023cis_pass['warn_age'] }} {{ item }}"
+        loop: "{{ discovered_warn_days.stdout_lines }}"
+        when:
+            - discovered_warn_days.stdout_lines | length > 0
+            - item in discovered_interactive_usernames.stdout
+            - amzn2023cis_force_user_warnage
+  when:
+      - amzn2023cis_rule_4_6_1_3
+  tags:
+      - level1-server
+      - patch
+      - password
+      - rule_4.6.1.3
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.6.1.4 | PATCH | Ensure inactive password lock is 30 days or less"
+  block:
+      - name: "4.6.1.4 | AUDIT | Ensure inactive password lock is 30 days or less | Check current settings"
+        ansible.builtin.shell: useradd -D | grep INACTIVE={{ amzn2023cis_inactivelock.lock_days }} | cut -f2 -d=
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amzn2023cis_4_6_1_4_inactive_settings
+
+      - name: "4.6.1.4 | PATCH | Ensure inactive password lock is 30 days or less | Set default inactive setting"
+        ansible.builtin.shell: useradd -D -f {{ amzn2023cis_inactivelock.lock_days }}
+        when: amzn2023cis_4_6_1_4_inactive_settings.stdout | length == 0
+
+      - name: "4.6.1.4 | AUDIT | Ensure inactive password lock is 30 days or less | Getting user list"
+        ansible.builtin.shell: "awk -F: '/^[^#:]+:[^\\!\\*:]*:[^:]*:[^:]*:[^:]*:[^:]*:(\\s*|-1|3[1-9]|[4-9][0-9]|[1-9][0-9][0-9]+):[^:]*:[^:]*\\s*$/ {print $1}' /etc/shadow"
+        changed_when: false
+        check_mode: false
+        register: amzn2023cis_4_6_1_4_user_list
+
+      - name: "4.6.1.4 | PATCH | Ensure inactive password lock is 30 days or less | Apply Inactive setting to existing accounts"
+        ansible.builtin.shell: chage --inactive {{ amzn2023cis_inactivelock.lock_days }} "{{ item }}"
+        loop: "{{ amzn2023cis_4_6_1_4_user_list.stdout_lines }}"
+  when:
+      - amzn2023cis_rule_4_6_1_4
+  tags:
+      - level1-server
+      - patch
+      - password
+      - rule_4.6.1.4
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.6.1.5 | PATCH | Ensure all users last password change date is in the past"
+  block:
+      - name: "4.6.1.5 | AUDIT | Ensure all users last password change date is in the past | Get current date in Unix Time"
+        ansible.builtin.shell: echo $(($(date --utc --date "$1" +%s)/86400))
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amzn2023cis_4_6_1_5_currentut
+
+      - name: "4.6.1.5 | AUDIT | Ensure all users last password change date is in the past | Get list of users with last changed pw date in the future"
+        ansible.builtin.shell: "cat /etc/shadow | awk -F: '{if($3>{{ amzn2023cis_4_6_1_5_currentut.stdout }})print$1}'"
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amzn2023cis_4_6_1_5_user_list
+
+      - name: "4.6.1.5 | AUDIT | Ensure all users last password change date is in the past | Alert on accounts with pw change in the future"
+        ansible.builtin.debug:
+            msg: "Warning!! The following accounts have the last PW change date in the future: {{ amzn2023cis_4_6_1_5_user_list.stdout_lines }}"
+        when:
+            - amzn2023cis_4_6_1_5_user_list.stdout | length > 0
+            - not amzn2023cis_futurepwchgdate_autofix
+
+      - name: "4.6.1.5 | AUDIT | Ensure all users last password change date is in the past | warning count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+        when:
+            - amzn2023cis_4_6_1_5_user_list.stdout | length > 0
+            - not amzn2023cis_futurepwchgdate_autofix
+
+      - name: "4.6.1.5 | PATCH | Ensure all users last password change date is in the past | Fix accounts with pw change in the future"
+        ansible.builtin.shell: passwd --expire {{ item }}
+        when:
+            - amzn2023cis_4_6_1_5_user_list.stdout | length > 0
+            - amzn2023cis_futurepwchgdate_autofix
+        loop: "{{ amzn2023cis_4_6_1_5_user_list.stdout_lines }}"
+  vars:
+      warn_control_id: '4.6.1.5'
+  when:
+      - amzn2023cis_rule_4_6_1_5
+  tags:
+      - level1-server
+      - patch
+      - rule_4.6.1.5
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+
+####4.6.2.x
+
+
+- name: "4.6.2 | PATCH | Ensure system accounts are secured"
+  block:
+      - name: "4.6.2 | PATCH | Ensure system accounts are secured | Set nologin"
+        ansible.builtin.user:
+            name: "{{ item.id }}"
+            shell: /usr/sbin/nologin
+        loop: "{{ amzn2023cis_passwd }}"
+        when:
+            - item.id != "root"
+            - item.id != "sync"
+            - item.id != "shutdown"
+            - item.id != "halt"
+            - item.id != "nfsnobody"
+            - item.uid < min_int_uid | int
+            - item.shell != "      /bin/false"
+            - item.shell != "      /usr/sbin/nologin"
+        loop_control:
+            label: "{{ item.id }}"
+
+      - name: "4.6.2 | PATCH | Ensure system accounts are secured | Lock accounts"
+        ansible.builtin.user:
+            name: "{{ item.id }}"
+            password_lock: true
+        loop: "{{ amzn2023cis_passwd }}"
+        when:
+            - item.id != "halt"
+            - item.id != "shutdown"
+            - item.id != "sync"
+            - item.id != "root"
+            - item.id != "nfsnobody"
+            - item.uid < min_int_uid | int
+            - item.shell != "      /bin/false"
+            - item.shell != "      /usr/sbin/nologin"
+        loop_control:
+            label: "{{ item.id }}"
+  when:
+      - amzn2023cis_rule_4_6_2
+  tags:
+      - level1-server
+      - patch
+      - accounts
+      - rule_4.6.2
+      - nist_sp800-53r5_AC-2
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_AC-5
+      - nist_sp800-53r5_MP-5
+
+- name: "4.6.3 | PATCH | Ensure default user shell timeout is 900 seconds or less"
+  ansible.builtin.blockinfile:
+      path: "{{ item.path }}"
+      state: "{{ item.state }}"
+      marker: "# {mark} - CIS benchmark - Ansible-lockdown"
+      create: true
+      mode: '0644'
+      block: |
+        TMOUT={{ amzn2023cis_shell_session_timeout.timeout }}
+        export TMOUT
+        readonly TMOUT
+  loop:
+      - { path: "{{ amzn2023cis_shell_session_timeout.file }}", state: present }
+      - { path: /etc/profile, state: "{{ (amzn2023cis_shell_session_timeout.file == '/etc/profile') | ternary('present', 'absent') }}" }
+  when:
+      - amzn2023cis_rule_4_6_3
+  tags:
+      - level1-server
+      - patch
+      - accounts
+      - rule_4.6.3
+      - nist_sp800-53r5_AC-11
+
+- name: "4.6.4 | PATCH | Ensure default group for the root account is GID 0"
+  ansible.builtin.user:
+      name: root
+      group: 0
+  when:
+      - amzn2023cis_rule_4_6_4
+  tags:
+      - level1-server
+      - patch
+      - accounts
+      - rule_4.6.4
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+
+- name: "4.6.5 | PATCH | Ensure default user umask is 027 or more restrictive"
+  block:
+      - name: "4.6.5 | PATCH | Ensure default user umask is 027 or more restrictive | Set umask for /etc/login.defs pam_umask settings"
+        ansible.builtin.replace:
+            path: "{{ item }}"
+            regexp: ^(?i)(\s*umask)\s+(?!\d*[2,7]7)\d{3,4}
+            replace: '\1 027'
+        loop:
+            - /etc/bashrc
+            - /etc/profile
+            - /etc/login.defs
+
+      - name: "4.6.5 | PATCH | Ensure default user umask is 027 or more restrictive | Set umask for /etc/bashrc"
+        ansible.builtin.lineinfile:
+            path: /etc/login.defs
+            regexp: '^USERGROUPS_ENAB'
+            line: USERGROUPS_ENAB no
+
+  when:
+      - amzn2023cis_rule_4_6_5
+  tags:
+      - level1-server
+      - patch
+      - accounts
+      - rule_4.6.5
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
+
+- name: "4.6.6 | PATCH | Ensure root password is set"
+  ansible.builtin.debug:
+      msg: "The root password has been set as per the assert in early stages"
+  when:
+      - amzn2023cis_rule_4_6_6
+  tags:
+      - level1-server
+      - patch
+      - accounts
+      - root
+      - rule_4.6.6
+      - nist_sp800-53r5_AC-2
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_AC-5
+      - nist_sp800-53r5_MP-2

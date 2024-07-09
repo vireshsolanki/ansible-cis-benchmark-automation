@@ -1,0 +1,43 @@
+---
+####4.2.x
+- name: "4.2.12 | PATCH | Ensure SSH X11 forwarding is disabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#X11Forwarding|^X11Forwarding"
+      line: 'X11Forwarding no'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_12
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level2-server
+      - patch
+      - ssh
+      - rule_4.2.12
+      - nist_sp800-53r5_CM-7
+
+- name: "4.2.13 | PATCH | Ensure SSH AllowTcpForwarding is disabled"
+  ansible.builtin.lineinfile:
+      path: "{{ item.path }}"
+      regexp: "^#AllowTcpForwarding|^AllowTcpForwarding"
+      line: 'AllowTcpForwarding no'
+      validate: sshd -t -f %s
+  with_items:
+      - "{{ sshd_d_conf_files.files }}"
+      - "{{ main_sshd_cfg.stat }}"
+  when:
+      - amzn2023cis_rule_4_2_13
+      - "'openssh-server' in ansible_facts.packages"
+  tags:
+      - level2-server
+      - patch
+      - ssh
+      - rule_4.2.13
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5

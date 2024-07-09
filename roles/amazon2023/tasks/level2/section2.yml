@@ -1,0 +1,15 @@
+---
+### s
+- name: "2.2.1 | PATCH | Ensure xorg-x11-server-common is not installed"
+  ansible.builtin.package:
+      name: xorg-x11-server-common
+      state: absent
+  when:
+      - amzn2023cis_rule_2_2_1
+      - "'xorg-x11-server-common' in ansible_facts.packages"
+  tags:
+      - level2-server
+      - patch
+      - x11
+      - rule_2.2.1
+      - nist_sp800-53r5_CM-7

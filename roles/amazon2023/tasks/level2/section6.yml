@@ -1,0 +1,47 @@
+---
+###6.1.9 
+- name: "6.1.9 | AUDIT | Audit system file permissions"
+  block:
+      - name: "6.1.9 | AUDIT | Audit system file permissions | Audit the packages"
+        ansible.builtin.shell: rpm -Va --nomtime --nosize --nomd5 --nolinkto
+        changed_when: false
+        failed_when: false
+        register: amzn2023cis_6_1_9_packages_rpm
+
+      - name: "6.1.9 | AUDIT | Audit system file permissions | Create list and warning"
+        block:
+            - name: "6.1.9 | AUDIT | Audit system file permissions | Add file discrepancy list to system"
+              ansible.builtin.copy:
+                  dest: "{{ amzn2023cis_rpm_audit_file }}"  # noqa template-instead-of-copy
+                  content: "{{ amzn2023cis_6_1_9_packages_rpm.stdout }}"
+                  owner: root
+                  group: root
+                  mode: '0640'
+
+            - name: "6.1.9 | AUDIT | Audit system file permissions | Message out alert for package descrepancies"
+              ansible.builtin.debug:
+                  msg: |
+                     "Warning!! You have some package descrepancies issues.
+                      The file list can be found in {{ amzn2023cis_rpm_audit_file }}"
+
+            - name: "6.1.9 | AUDIT | Audit system file permissions | warning count"
+              ansible.builtin.import_tasks:
+                  file: warning_facts.yml
+              vars:
+                  warn_control_id: '6.1.9'
+              when: amzn2023cis_6_1_9_packages_rpm.stdout|length > 0
+  when:
+      - amzn2023cis_rule_6_1_9
+  tags:
+      - level2-server
+      - manual
+      - audit
+      - permissions
+      - rule_6.1.9
+      - nist_sp800-53r5_CM-1
+      - nist_sp800-53r5_CM-2
+      - nist_sp800-53r5_CM-6
+      - nist_sp800-53r5_CM-7
+      - nist_sp800-53r5_IA-5
+      - nist_sp800-53r5_AC-3
+      - nist_sp800-53r5_MP-2
