@@ -14,9 +14,9 @@
 
     - role: amazon2023
       tasks_from: tasks/level1/main.yml
-      tags: amazon2023-level1
+      tags: level1-server
     - role: amazon2023
       tasks_from: tasks/level2/main.yml
-      tags: amazon2023-level2
+      tags: level2-server
 
     
