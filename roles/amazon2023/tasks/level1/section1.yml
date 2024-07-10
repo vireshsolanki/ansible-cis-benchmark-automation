@@ -455,7 +455,6 @@
       - nist_sp800-53r5_SI-3
 
 #####1.2.x 
-
 - name: "1.2.1 | AUDIT | Ensure GPG keys are configured"
   block:
       - name: "1.2.1 | AUDIT | Ensure GPG keys are configured | list installed pubkey keys"

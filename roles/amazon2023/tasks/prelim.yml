@@ -1,5 +1,10 @@
 ---
-
+- name: install python selinux library required by future ansible modules
+  become: true
+  yum:
+    name: libselinux-python3
+    state: present
+    update_cache: true
 - name: Include audit specific variables
   when:
       - run_audit or audit_only
@@ -142,6 +147,8 @@
   tags:
       - always
 
+
+
 - name: "PRELIM | Update to latest gpg keys"
   ansible.builtin.package:
       name: "{{ gpg_key_package }}"
@@ -150,6 +157,9 @@
       - amzn2023cis_rule_1_2_4
   tags:
       - always
+
+
+
 
 - name: "PRELIM | Section 4.1 | Configure cron"
   ansible.builtin.package:

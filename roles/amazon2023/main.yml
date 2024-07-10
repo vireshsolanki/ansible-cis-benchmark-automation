@@ -3,6 +3,7 @@
 - name: Amazon 2023 cis benchmark
   hosts: localhost
   become: true
+  gather_facts: true
 
   roles:
 
