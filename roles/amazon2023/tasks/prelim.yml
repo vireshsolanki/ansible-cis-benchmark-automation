@@ -1,10 +1,4 @@
 ---
-- name: install python selinux library required by future ansible modules
-  become: true
-  yum:
-    name: libselinux-python3
-    state: present
-    update_cache: true
 
 - name: Include audit specific variables
   when:

@@ -49,7 +49,7 @@ ubtu22cis_uses_root: false
 # carried out for this role by the role maintainers.
 system_is_ec2: false  
 
-
+os_check: true
 ##Some default actions
 
 ##
