@@ -59,6 +59,3 @@ Contributions are welcomed! Please submit any improvements or suggestions via pu
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-```
-
-This README provides comprehensive information about the Ansible CIS Benchmark role, including configuration options, usage guidelines for specific CIS security levels, notes, contribution guidelines, and licensing information. Additionally, it emphasizes the compatibility of the role with Ansible versions 2.12.0 and above.

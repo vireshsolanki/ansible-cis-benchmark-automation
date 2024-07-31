@@ -21,7 +21,7 @@ container_vars_file: is_container.yml
 # If you know that your OS finds itself among the supported
 # Oss then this variable's value does not need to be changed.
 # If not, you should change it accordingly - see README e.g. CentOS
-os_check: true
+os_check: false
 
 # The following variables are used in order to determine if
 # certain sections of the role should get executed or not.

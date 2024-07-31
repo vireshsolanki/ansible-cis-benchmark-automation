@@ -1,0 +1,826 @@
+---
+
+#### Ensuring modules available or not
+
+- name: "1.1.1.1 | PATCH | Ensure cramfs kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_1
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.1.1
+      - cramfs
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.1 | PATCH | Ensure cramfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install cramfs(\\s|$)"
+            line: "install cramfs /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.1 | PATCH | Ensure cramfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist cramfs(\\s|$)"
+            line: "blacklist cramfs"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.1 | PATCH | Ensure cramfs kernel module is not available | Remove cramfs module"
+        community.general.modprobe:
+            name: cramfs
+            state: absent
+
+- name: "1.1.1.2 | PATCH | Ensure freevxfs kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_2
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.1.2
+      - cramfs
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.2 | PATCH | Ensure freevxfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install freevxfs(\\s|$)"
+            line: "install freevxfs /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.2 | PATCH | Ensure freevxfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist freevxfs(\\s|$)"
+            line: "blacklist freevxfs"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.2 | PATCH | Ensure freevxfs kernel module is not available | Remove cramfs module"
+        community.general.modprobe:
+            name: freevxfs
+            state: absent
+
+- name: "1.1.1.3 | PATCH | Ensure hfs kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_3
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.1.3
+      - hfs
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.3 | PATCH | Ensure hfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install hfs(\\s|$)"
+            line: "install hfs /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.3 | PATCH | Ensure hfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist hfs(\\s|$)"
+            line: "blacklist hfs"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.3 | PATCH | Ensure hfs kernel module is not available | Remove hfs module"
+        community.general.modprobe:
+            name: hfs
+            state: absent
+
+- name: "1.1.1.4 | PATCH | Ensure hfsplus kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_4
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.1.4
+      - hfsplus
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.4 | PATCH | Ensure hfsplus kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install hfsplus(\\s|$)"
+            line: "install hfsplus /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.4 | PATCH | Ensure hfsplus kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist hfsplus(\\s|$)"
+            line: "blacklist hfsplus"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.4 | PATCH | Ensure hfsplus kernel module is not available | Remove hfsplus module"
+        community.general.modprobe:
+            name: hfsplus
+            state: absent
+
+- name: "1.1.1.5 | PATCH | Ensure jffs2 kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_5
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.1.5
+      - jffs2
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.5 | PATCH | Ensure jffs2 kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install jffs2(\\s|$)"
+            line: "install jffs2 /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.5 | PATCH | Ensure jffs2 kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist jffs2(\\s|$)"
+            line: "blacklist jffs2"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.5 | PATCH | Ensure jffs2 kernel module is not available | Remove jffs2 module"
+        community.general.modprobe:
+            name: jffs2
+            state: absent
+
+
+
+
+- name: "1.1.1.8 | PATCH | Ensure udf kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_8
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.1.8
+      - usb
+      - modprobe
+      - NIST800-53R5_SI-3
+  block:
+      - name: "1.1.1.8 | PATCH | Ensure usb-storage kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install usb-storage(\\s|$)"
+            line: "install usb-storage /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.8 | PATCH | Ensure usb-storage kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist usb-storage(\\s|$)"
+            line: "blacklist usb-storage"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.8 | PATCH | Remove usb-storage module"
+        community.general.modprobe:
+            name: usb-storage
+            state: absent
+
+
+##### Creating /tmp partition
+
+- name: "1.1.2.1.1 | PATCH | Ensure /tmp is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_1_1
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.2.1.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.1.1'
+      required_mount: '/tmp'
+  block:
+      - name: "1.1.2.1.1 | AUDIT | Ensure /tmp is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.1.1 | AUDIT | Ensure /tmp is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: |
+         "1.1.2.1.2 | PATCH | Ensure nodev option set on /tmp partition
+          1.1.2.1.3 | PATCH | Ensure nosuid option set on /tmp partition
+          1.1.2.1.4 | PATCH | Ensure noexec option set on /tmp partition"
+  when:
+      - item.mount == "/tmp"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_1_2 or
+        amazon2cis_rule_1_1_2_1_3 or
+        amazon2cis_rule_1_1_2_1_4
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.2.1.2
+      - rule_1.1.2.1.3
+      - rule_1.1.2.1.4
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /tmp
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_1_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_1_3 %}nosuid,{% endif %}{% if amazon2cis_rule_1_1_2_1_4 %}noexec{% endif %}
+  notify: systemd restart tmp.mount
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+#### Creating dev/shm partition
+
+
+- name: "1.1.2.2.1 | PATCH | Ensure /dev/shm is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_2_1
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.2.2.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.2.1'
+      required_mount: '/dev/shm'
+  block:
+      - name: "1.1.2.2.1 | AUDIT | Ensure /dev/shm is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.2.1 | AUDIT | Ensure /dev/shm is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: |
+         "1.1.2.2.2 | PATCH | Ensure nodev option set on /dev/shm partition
+          1.1.2.2.3 | PATCH | Ensure nosuid option set on /dev/shm partition
+          1.1.2.2.4 | PATCH | Ensure noexec option set on /dev/shm partition"
+  when:
+      - item.mount == "/dev/shm"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_2_2 or
+        amazon2cis_rule_1_1_2_2_3 or
+        amazon2cis_rule_1_1_2_2_4
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.2.2.2
+      - rule_1.1.2.2.3
+      - rule_1.1.2.2.4
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /dev/shm
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_2_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_2_3 %}nosuid,{% endif %}{% if amazon2cis_rule_1_1_2_2_4 %}noexec{% endif %}
+  notify: Remount dev_shm
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+###Creating nodev noduid for /home but to apply this you must run level2 script as well or unncomment this
+
+# - name: "1.1.2.3.1 | PATCH | Ensure /home is a seperate partition"
+#   when:
+#       - required_mount not in mount_names
+#       - amazon2cis_rule_1_1_2_3_1
+#   tags:
+#       - level2
+#       - automated
+#       - patch
+#       - rule_1.1.2.3.1
+#       - mounts
+#       - NIST800-53R5_CM-7
+#   vars:
+#       warn_control_id: '1.1.2.3.1'
+#       required_mount: '/home'
+#   block:
+#       - name: "1.1.2.3.1 | AUDIT | Ensure /home is a separate partition | Absent"
+#         ansible.builtin.debug:
+#             msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+#       - name: "1.1.2.3.1 | AUDIT | Ensure /home is a separate partition | Warn Count"
+#         ansible.builtin.import_tasks:
+#             file: warning_facts.yml
+
+
+
+- name: |
+         "1.1.2.3.2 | PATCH | Ensure nodev option set on /home partition
+          1.1.2.3.3 | PATCH | Ensure nosuid option set on /home partition"
+  when:
+      - item.mount == "/home"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_3_2 or
+        amazon2cis_rule_1_1_2_3_3
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.1.2.3.2
+      - rule_1.1.2.3.3
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /home
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_3_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_3_3 %}nosuid{% endif %}
+  notify: Remount home
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+#### Ensure gpg keys are configured or activated 
+
+
+- name: "1.2.1 | PATCH | Ensure GPG keys are configured"
+  when:
+      - amazon2cis_rule_1_2_1
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.2.1
+      - gpg
+      - NIST800-53R5_SI-2
+  ansible.builtin.command: gpg --quiet --with-fingerprint /etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-linux-{{ ansible_distribution_major_version }}
+  changed_when: "'created' in amazon2cis_1_2_1_status.stderr"
+  register: amazon2cis_1_2_1_status
+
+- name: "1.2.2 | PATCH | Ensure gpgcheck is globally activated"
+  when:
+      - amazon2cis_rule_1_2_2
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.2.2
+      - gpg
+      - NIST800-53R5_SI-2
+  block:
+      - name: "1.2.2 | PATCH | Ensure gpgcheck is globally activated | find repo files"
+        ansible.builtin.find:
+            paths: /etc/yum.repos.d
+            patterns: "*.repo"
+        register: amazon2_1_2_2_yum_repos
+
+      - name: "1.2.2 | PATCH | Ensure gpgcheck is globally activated | set gpgcheck"
+        ansible.builtin.replace:
+            path: "{{ item.path }}"
+            regexp: ^gpgcheck\s*=\s*0
+            replace: "gpgcheck=1"
+        with_items:
+            - "{{ amazon2_1_2_2_yum_repos.files }}"
+        loop_control:
+            label: "{{ item.path }}"
+
+
+### ENsure package manager is configured or not
+
+
+
+- name: "1.2.4 | AUDIT | Ensure package manager repositories are configured"
+  when:
+      - amazon2cis_rule_1_2_4
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.2.4
+      - NIST800-53R5_SI-2
+  vars:
+      warn_control_id: '1.2.4'
+  block:
+      - name: "1.2.4 | AUDIT | Ensure package manager repositories are configured | Get repo list"
+        ansible.builtin.command: yum repolist
+        changed_when: false
+        register: amazon2cis_1_2_4_repolist
+
+      - name: "1.2.4 | AUDIT | Ensure package manager repositories are configured | Show repo list"
+        ansible.builtin.debug:
+            msg:
+                - "Please check against site policy repos listed below match expected:"
+                - "{{ amazon2cis_1_2_4_repolist.stdout_lines }}"
+
+      - name: "1.2.4 | AUDIT | Ensure package manager repositories are configured | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: "1.2.5 | PATCH | Ensure updates, patches, and additional security software are installed"
+  when:
+      - amazon2cis_rule_1_2_5
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.2.5
+      - NIST800-53R5_SI-2
+  vars:
+      ansible_python_interpreter: /bin/python
+  ansible.builtin.package:
+      name: "*"
+      state: latest
+
+
+
+## Authentication for single user mode
+
+- name: "1.3.1 | PATCH | Ensure authentication required for single user mode"
+  when:
+      - amazon2cis_rule_1_3_1
+      - ansible_facts['distribution_major_version'] is version('2', '>=')
+      - amazon2cis_config_aide
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.3.1
+  block:
+      - name: "1.3.1 | PATCH | Ensure authentication required for single user mode | Emergency service"
+        ansible.builtin.lineinfile:
+            path: /usr/lib/systemd/system/emergency.service
+            regexp: '/sbin/sulogin'
+            line: 'ExecStart=-/bin/sh -c "/sbin/sulogin; /usr/bin/systemctl --fail --no-block default'
+
+      - name: "1.3.1 | PATCH | Ensure authentication required for single user mode | Rescue service"
+        ansible.builtin.lineinfile:
+            path: /usr/lib/systemd/system/rescue.service
+            regexp: '/sbin/sulogin'
+            line: 'ExecStart=-/bin/sh -c "/sbin/sulogin; /usr/bin/systemctl --fail --no-block default'
+
+
+## Checking for ASLR coredump and ptrace scope
+
+- name: "1.4.1 | PATCH | Ensure address space layout randomization (ASLR) is enabled"
+  when:
+      - amazon2cis_rule_1_4_1
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.4.1
+      - NIST800-53R5_CM-6
+  ansible.posix.sysctl:
+      name: kernel.randomize_va_space
+      value: '2'
+      state: present
+      reload: true
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ kernel_sysctl_file }}"
+
+- name: "1.4.2 | PATCH | Ensure ptrace_scope is restricted"
+  when:
+      - amazon2cis_rule_1_4_2
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.4.2
+  ansible.posix.sysctl:
+      name: kernel.yama.ptrace_scope
+      value: '1'
+      state: present
+      reload: true
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ kernel_sysctl_file }}"
+
+- name: "1.4.3 | PATCH | Ensure core dump backtraces are disabled"
+  when:
+      - amazon2cis_rule_1_4_3
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.4.3
+      - coredump
+      - NIST800-53R5_CM-6b
+  notify: Systemd_daemon_reload
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/coredump.conf
+      regexp: ^ProcessSizeMax
+      line: ProcessSizeMax=0
+      create: true
+      mode: '0644'
+
+- name: "1.4.4 | PATCH | Ensure core dump storage is disabled"
+  when:
+      - amazon2cis_rule_1_4_4
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.4.4
+      - coredump
+  notify: Systemd_daemon_reload
+  ansible.builtin.lineinfile:
+      path: /etc/systemd/coredump.conf
+      regexp: ^Storage
+      line: Storage=none
+      create: true
+      mode: '0644'
+
+
+## Checking for Selinux tools
+
+
+- name: "1.5.1.1 | PATCH | Ensure SELinux is installed"
+  when:
+      - not amazon2cis_selinux_disable
+      - amazon2cis_rule_1_5_1_1
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.5.1.1
+      - selinux
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  vars:
+      ansible_python_interpreter: /bin/python
+  ansible.builtin.package:
+      name: libselinux
+      state: present
+
+- name: "1.5.1.2 | PATCH | Ensure SELinux is not disabled in bootloader configuration"
+  when:
+      - not amazon2cis_selinux_disable
+      - amazon2cis_rule_1_5_1_2
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.5.1.2
+      - selinux
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  notify: Rebuild_grub
+  ansible.builtin.replace:
+      path: /etc/default/grub
+      regexp: '{{ item }}'
+      replace: ''
+  loop:
+      - selinux=0
+      - enforcing=0
+
+- name: |
+    "1.5.1.3 | PATCH | Ensure SELinux policy is configured
+     1.5.1.4 | PATCH | Ensure the SELinux state is enforcing or permissive"
+  when:
+      - not amazon2cis_selinux_disable
+      - amazon2cis_rule_1_5_1_3
+      - amazon2cis_rule_1_5_1_4
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.5.1.3
+      - rule_1.5.1.4
+      - selinux
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  vars:
+      ansible_python_interpreter: "{{ python2_bin }}"
+  ansible.posix.selinux:
+      conf: /etc/selinux/config
+      policy: "{{ amazon2cis_selinux_pol }}"
+      state: "{{ amazon2cis_selinux_state }}"
+
+
+
+- name: "1.5.1.6 | AUDIT | Ensure no unconfined services exist"
+  when:
+      - amazon2cis_rule_1_5_1_6
+  tags:
+      - level1
+      - automated
+      - audit
+      - rule_1.5.1.6
+      - selinux
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  vars:
+      warn_control_id: '1.5.1.6'
+  block:
+      - name: "1.5.1.6 | AUDIT | Ensure no unconfined services exist | Find the unconfined services"
+        ansible.builtin.shell: ps -eZ | grep unconfined_service_t
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_1_5_1_6_unconf_services
+
+      - name: "1.5.1.6 | AUDIT | Ensure no unconfined services exist | Message on unconfined services"
+        ansible.builtin.debug:
+            msg: "Warning! You have unconfined services: {{ amazon2cis_1_5_1_6_unconf_services.stdout_lines }}"
+        when: amazon2cis_1_5_1_6_unconf_services.stdout | length > 0
+
+      - name: "1.5.1.6 | AUDIT | Ensure no unconfined services exist | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: "1.5.1.7 | PATCH | Ensure the MCS Translation Service (mcstrans) is not installed"
+  when:
+      - amazon2cis_rule_1_5_1_7
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.5.1.7
+      - mcstrans
+      - NIST800-53R5_SI-4
+  vars:
+      ansible_python_interpreter: /bin/python
+  ansible.builtin.package:
+      name: mcstrans
+      state: absent
+
+- name: "1.5.1.8 | PATCH | Ensure SETroubleshoot is not installed"
+  when:
+      - amazon2cis_rule_1_5_1_8
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.5.1.8
+      - selinux
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  vars:
+      ansible_python_interpreter: /bin/python
+  ansible.builtin.package:
+      name: setroubleshoot
+      state: absent
+
+
+
+## Configuring motd , warning message , message of the day
+
+
+- name: "1.6.1 | PATCH | Ensure message of the day is configured properly"
+  when:
+      - amazon2cis_rule_1_6_1
+      - not amazon2cis_selinux_disable
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.6.1
+      - banner
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-3
+      - NIST800-53R5_CM-6
+  ansible.builtin.template:
+      src: etc/motd.j2
+      dest: /etc/motd
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: "1.6.2 | PATCH | Ensure local login warning banner is configured properly"
+  when:
+      - amazon2cis_rule_1_6_2
+      - not amazon2cis_selinux_disable
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.6.2
+      - banner
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-3
+      - NIST800-53R5_CM-6
+  ansible.builtin.template:
+      src: etc/issue.j2
+      dest: /etc/issue
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: "1.6.3 | PATCH | Ensure remote login warning banner is configured properly"
+  when:
+      - amazon2cis_rule_1_6_3
+      - not amazon2cis_selinux_disable
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.6.3
+      - banner
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-3
+      - NIST800-53R5_CM-6
+  ansible.builtin.template:
+      src: etc/issue.net.j2
+      dest: /etc/issue.net
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: "1.6.4 | PATCH | Ensure permissions on /etc/motd are configured"
+  when:
+      - amazon2cis_rule_1_6_4
+      - not amazon2cis_selinux_disable
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.6.4
+      - banner
+      - permissions
+      - NIST800-53R5_MP-2
+      - NIST800-53R5_AC-3
+  ansible.builtin.file:
+      path: /etc/motd
+      state: file
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: "1.6.5 | PATCH | Ensure permissions on /etc/issue are configured"
+  when:
+      - amazon2cis_rule_1_6_5
+      - not amazon2cis_selinux_disable
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.6.5
+      - banner
+      - permissions
+      - NIST800-53R5_MP-2
+      - NIST800-53R5_AC-3
+  ansible.builtin.file:
+      path: /etc/issue
+      state: file
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: "1.6.6 | PATCH | Ensure permissions on /etc/issue.net are configured"
+  when:
+      - amazon2cis_rule_1_6_6
+      - not amazon2cis_selinux_disable
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_1.6.6
+      - banner
+      - permissions
+      - NIST800-53R5_MP-2
+      - NIST800-53R5_AC-3
+  ansible.builtin.file:
+      path: /etc/issue.net
+      state: file
+      owner: root
+      group: root
+      mode: '0644'
+

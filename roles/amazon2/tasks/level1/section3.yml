@@ -1,0 +1,962 @@
+---
+
+### Ensuring wireless and bluetooth connection is disabled or not
+- name: "3.1.2 | PATCH | Ensure wireless interfaces are disabled"
+  when:
+      - amazon2cis_rule_3_1_2
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.1.2
+      - wireless
+  block:
+      - name: "3.1.2 | AUDIT | Ensure wireless interfaces are disabled | Check if nmcli command is available"
+        ansible.builtin.command: rpm -q NetworkManager
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amazon2_3_1_2_nmcli_available
+
+      - name: "3.1.2 | AUDIT | Ensure wireless interfaces are disabled | Check if wifi is enabled"
+        ansible.builtin.command: nmcli radio wifi
+        changed_when: false
+        failed_when: false
+        check_mode: false
+        register: amazon2_3_2_1_wifi_enabled
+        when: amazon2_3_1_2_nmcli_available.rc == 0
+
+      - name: "3.1.2 | PATCH | Ensure wireless interfaces are disabled | Disable wifi if enabled"
+        ansible.builtin.command: nmcli radio wifi off
+        when:
+            - amazon2_3_2_1_wifi_enabled.stdout is defined
+            - "'enabled' in amazon2_3_2_1_wifi_enabled.stdout"
+
+- name: "3.1.3 | PATCH | Ensure bluetooth services are not in use"
+  when:
+      - amazon2cis_rule_3_1_3
+  tags:
+      - level1-server
+      - level2-workstation
+      - automated
+      - patch
+      - sctp
+      - NIST800-53R5_CM-7
+      - rule_3.1.3
+  block:
+      - name: "3.1.3 | PATCH | Ensure bluetooth services are not in use | pkg"
+        when:
+            - not amazon2cis_bluetooth_service
+            - not amazon2cis_bluetooth_mask
+        ansible.builtin.package:
+            name: bluez
+            state: absent
+
+      - name: "3.1.3 | PATCH | Ensure bluetooth services are not in use | mask"
+        when:
+            - not amazon2cis_bluetooth_service
+            - amazon2cis_bluetooth_mask
+        notify: Systemd_daemon_reload
+        ansible.builtin.systemd:
+            name: bluetooth.service
+            enabled: false
+            state: stopped
+            masked: true
+
+
+- name: "3.3.1 | PATCH | Ensure IP forwarding is disabled"
+  when:
+      - not amazon2cis_is_router
+      - amazon2cis_rule_3_3_1
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - sysctl
+      - patch
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.1
+  block:
+      - name: "3.3.1 | PATCH | Ensure IP forwarding is disabled | Disable IPv4 forwarding"
+        ansible.posix.sysctl:
+            name: net.ipv4.ip_forward
+            value: '0'
+            ignoreerrors: true
+            sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+        notify: Sysctl_flush_ipv4_routes
+
+      - name: "3.3.1 | PATCH | Ensure IP forwarding is disabled | Disable IPv6 forwarding"
+        when:
+            - amazon2cis_ipv6_required or
+              amazon2cis_ipv6_sysctl_force
+        ansible.posix.sysctl:
+            name: net.ipv6.conf.all.forwarding
+            value: '0'
+            ignoreerrors: true
+            sysctl_file: "{{ amazon2cis_ipv6_sysctl_file }}"
+        notify: Sysctl_flush_ipv6_routes
+
+- name: "3.3.2 | PATCH | Ensure packet redirect sending is disabled"
+  when:
+      - not amazon2cis_is_router
+      - amazon2cis_rule_3_3_2
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.2
+  ansible.posix.sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  notify: Sysctl_flush_ipv4_routes
+  loop:
+      - { name: net.ipv4.conf.all.send_redirects, value: 0 }
+      - { name: net.ipv4.conf.default.send_redirects, value: 0 }
+
+- name: "3.3.3 | PATCH | Ensure bogus ICMP responses are ignored"
+  when:
+      - amazon2cis_rule_3_3_3
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.3
+  ansible.posix.sysctl:
+      name: net.ipv4.icmp_ignore_bogus_error_responses
+      value: '1'
+      state: present
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  notify: Sysctl_flush_ipv4_routes
+
+- name: "3.3.4 | PATCH | Ensure broadcast ICMP requests are ignored"
+  when:
+      - amazon2cis_rule_3_3_4
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.3
+      - rule_3.3.4
+  ansible.posix.sysctl:
+      name: net.ipv4.icmp_echo_ignore_broadcasts
+      value: '1'
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  notify: Sysctl_flush_ipv4_routes
+
+- name: "3.3.5 | PATCH | Ensure ICMP redirects are not accepted"
+  when:
+      - amazon2cis_rule_3_3_5
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.5
+  block:
+      - name: "3.3.5 | PATCH | Ensure ICMP redirects are not accepted | Set ICMP redirects IPv4"
+        ansible.posix.sysctl:
+            name: "{{ item.name }}"
+            value: "{{ item.value }}"
+            sysctl_set: true
+            ignoreerrors: true
+            sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+        notify: Sysctl_flush_ipv4_routes
+        loop:
+            - { name: net.ipv4.conf.all.accept_redirects, value: 0 }
+            - { name: net.ipv4.conf.default.accept_redirects, value: 0 }
+
+      - name: "3.3.5 | PATCH | Ensure ICMP redirects are not accepted | Set ICMP redirects IPv6"
+        when: amazon2cis_ipv6_required or amazon2cis_ipv6_sysctl_force
+        ansible.posix.sysctl:
+            name: "{{ item.name }}"
+            value: "{{ item.value }}"
+            sysctl_set: true
+            ignoreerrors: true
+            sysctl_file: "{{ amazon2cis_ipv6_sysctl_file }}"
+        notify: Sysctl_flush_ipv6_routes
+        loop:
+            - { name: net.ipv6.conf.all.accept_redirects, value: 0 }
+            - { name: net.ipv6.conf.default.accept_redirects, value: 0 }
+
+- name: "3.3.6 | PATCH | Ensure secure ICMP redirects are not accepted"
+  when:
+      - amazon2cis_rule_3_3_6
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.6
+  ansible.posix.sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  notify: Sysctl_flush_ipv4_routes
+  loop:
+      - { name: net.ipv4.conf.all.secure_redirects, value: 0 }
+      - { name: net.ipv4.conf.default.secure_redirects, value: 0 }
+
+- name: "3.3.7 | PATCH | Ensure Reverse Path Filtering is enabled"
+  when:
+      - amazon2cis_rule_3_3_7
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.7
+  ansible.posix.sysctl:
+      name: "{{ item }}"
+      value: '1'
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  loop:
+      - net.ipv4.conf.all.rp_filter
+      - net.ipv4.conf.default.rp_filter
+  notify: Sysctl_flush_ipv4_routes
+
+- name: "3.3.8 | PATCH | Ensure source routed packets are not accepted"
+  when:
+      - amazon2cis_rule_3_3_8
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.8
+  block:
+      - name: "3.3.8 | PATCH | Ensure source routed packets are not accepted | Set routed packets IPv4"
+        ansible.posix.sysctl:
+            name: "{{ item.name }}"
+            value: "{{ item.value }}"
+            sysctl_set: true
+            ignoreerrors: true
+            sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+        notify: Sysctl_flush_ipv4_routes
+        loop:
+            - { name: net.ipv4.conf.all.accept_source_route, value: 0 }
+            - { name: net.ipv4.conf.default.accept_source_route, value: 0 }
+
+      - name: "3.3.8 | PATCH | Ensure source routed packets are not accepted | Set routed packets IPv6"
+        when: amazon2cis_ipv6_required or amazon2cis_ipv6_sysctl_force
+        ansible.posix.sysctl:
+            name: "{{ item.name }}"
+            value: "{{ item.value }}"
+            sysctl_set: true
+            ignoreerrors: true
+            sysctl_file: "{{ amazon2cis_ipv6_sysctl_file }}"
+        notify: Sysctl_flush_ipv6_routes
+        loop:
+            - { name: net.ipv6.conf.all.accept_source_route, value: 0}
+            - { name: net.ipv6.conf.default.accept_source_route, value: 0 }
+
+- name: "3.3.9 | PATCH | Ensure suspicious packets are logged"
+  when:
+      - amazon2cis_rule_3_3_9
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_AU-3
+      - rule_3.3.9
+  ansible.posix.sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  notify: Sysctl_flush_ipv4_routes
+  loop:
+      - { name: net.ipv4.conf.all.log_martians, value: 1 }
+      - { name: net.ipv4.conf.default.log_martians, value: 1 }
+
+- name: "3.3.10 | PATCH | Ensure TCP SYN Cookies is enabled"
+  when:
+      - amazon2cis_rule_3_3_10
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.10
+  ansible.posix.sysctl:
+      name: net.ipv4.tcp_syncookies
+      value: '1'
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv4_sysctl_file }}"
+  notify: Sysctl_flush_ipv4_routes
+
+- name: "3.3.11 | PATCH | Ensure IPv6 router advertisements are not accepted"
+  when:
+      - amazon2cis_ipv6_required or amazon2cis_ipv6_sysctl_force
+      - amazon2cis_rule_3_3_11
+  tags:
+      - level1-server
+      - level1-workstation
+      - automated
+      - patch
+      - sysctl
+      - NIST800-53R5_CM-1
+      - NIST800-53R5_CM-2
+      - NIST800-53R5_CM-6
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_IA-5
+      - rule_3.3.11
+  ansible.posix.sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      sysctl_set: true
+      ignoreerrors: true
+      sysctl_file: "{{ amazon2cis_ipv6_sysctl_file }}"
+  notify: Sysctl_flush_ipv6_routes
+  loop:
+      - { name: net.ipv6.conf.all.accept_ra, value: 0 }
+      - { name: net.ipv6.conf.default.accept_ra, value: 0 }
+
+
+
+- name: "3.4.1.1 | PATCH | Ensure iptables is installed"
+  when:
+      - amazon2cis_rule_3_4_1_1
+      - "'iptables' not in ansible_facts.packages"
+      - amazon2cis_system_firewall == "firewalld"
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - iptables
+      - NIST800-53R5_CA-9
+      - rule_3.4.1.1
+  ansible.builtin.package:
+      name:
+          - iptables
+      state: present
+
+- name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use"
+  when:
+      - amazon2cis_rule_3_4_1_2
+      - amazon2cis_system_firewall == "firewalld"
+  tags:
+      - level1-server
+      - level1-workstation
+      - patch
+      - firewalld
+      - iptables
+      - rule_3.4.1.2
+  block:
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | firewalld"
+        when:
+            - amazon2cis_system_firewall == "firewalld"
+            - amazon2cis_iptables == "mask"
+        ansible.builtin.systemd:
+            name: "{{ item }}"
+            masked: true
+            enabled: "{{ (item in ansible_facts.packages) | ternary(false, omit) }}"
+            state: "{{ (item in ansible_facts.packages) | ternary('stopped', omit) }}"
+        loop:
+            - iptables-services
+            - ip6tables-services
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | firewalld"
+        when:
+            - amazon2cis_system_firewall == "firewalld"
+            - amazon2cis_nftables == "mask"
+        ansible.builtin.systemd:
+            name: nftables
+            masked: true
+            enabled: "{{ ('nftables' in ansible_facts.packages) | ternary(false, omit) }}"
+            state: "{{ ('nftables' in ansible_facts.packages) | ternary('stopped', omit) }}"
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | iptables"
+        when:
+            - amazon2cis_system_firewall == "iptables"
+            - amazon2cis_nftables == "mask"
+        ansible.builtin.systemd:
+            name: nftables
+            masked: true
+            enabled: "{{ ('nftables' in ansible_facts.packages) | ternary(false, omit) }}"
+            state: "{{ ('nftables' in ansible_facts.packages) | ternary('stopped', omit) }}"
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | iptables"
+        when:
+            - amazon2cis_system_firewall == "iptables"
+            - amazon2cis_firewalld == "mask"
+        ansible.builtin.systemd:
+            name: firewalld
+            masked: true
+            enabled: "{{ ('firewalld' in ansible_facts.packages) | ternary(false, omit) }}"
+            state: "{{ ('firewalld' in ansible_facts.packages) | ternary('stopped', omit) }}"
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | nftables"
+        when:
+            - amazon2cis_system_firewall == "nftables"
+            - amazon2cis_iptables == "mask"
+        ansible.builtin.systemd:
+            name: "{{ item }}"
+            masked: true
+            enabled: "{{ (item in ansible_facts.packages) | ternary(false, omit) }}"
+            state: "{{ (item in ansible_facts.packages) | ternary('stopped', omit) }}"
+        loop:
+            - iptables-services
+            - ip6tables-services
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | nftables"
+        when:
+            - amazon2cis_system_firewall == "nftables"
+            - amazon2cis_firewalld == "mask"
+        ansible.builtin.systemd:
+            name: firewalld
+            masked: true
+            enabled: "{{ ('firewalld' in ansible_facts.packages) | ternary(false, omit) }}"
+            state: "{{ ('firewalld' in ansible_facts.packages) | ternary('stopped', omit) }}"
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | {{ amazon2cis_system_firewall }} package installed"
+        when: "amazon2cis_system_firewall not in ansible_facts.packages"
+        ansible.builtin.package:
+            name: "{{ amazon2cis_system_firewall }}"
+            state: present
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | {{ amazon2cis_system_firewall }} started and enabled"
+        ansible.builtin.systemd:
+            name: "{{ amazon2cis_system_firewall }}"
+            enabled: true
+            state: started
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | remove nftables"
+        when:
+            - amazon2cis_system_firewall != "nftables"
+            - amazon2cis_nftables == "remove"
+        ansible.builtin.package:
+            name: nftables
+            state: absent
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | remove iptables"
+        when:
+            - amazon2cis_system_firewall != "iptables"
+            - amazon2cis_iptables == "remove"
+        ansible.builtin.package:
+            name:
+                - iptables-services
+                - ip6tables-services
+            state: absent
+
+      - name: "3.4.1.2 | PATCH | Ensure a single firewall configuration utility is in use | remove firewalld"
+        when:
+            - amazon2cis_system_firewall != "firewalld"
+            - amazon2cis_firewalld == "remove"
+        ansible.builtin.package:
+            name: firewalld
+            state: absent
+
+
+- name: "3.4.2.1 | PATCH | Ensure FirewallD is installed"
+  when:
+      - amazon2cis_rule_3_4_2_1
+      - amazon2cis_system_firewall == "firewalld"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.2.1
+      - firewall
+      - firewalld
+      - NIST800-53R5_CA-9
+  ansible.builtin.package:
+      name: firewalld
+      state: present
+  vars:
+      ansible_python_interpreter: /bin/python
+
+- name: "3.4.2.2 | PATCH | Ensure firewalld service is enabled and running"
+  when:
+      - amazon2cis_rule_3_4_2_2
+      - amazon2cis_system_firewall == "firewalld"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.2.2
+      - firewall
+      - firewalld
+      - NIST800-53R5_CA-9
+  ansible.builtin.systemd:
+      name: firewalld
+      state: started
+      enabled: true
+
+- name: "3.4.2.3 | AUDIT | Ensure firewalld drops unnecessary services and ports"
+  when:
+      - amazon2cis_rule_3_4_2_3
+      - amazon2cis_system_firewall == "firewalld"
+  tags:
+      - level1
+      - manual
+      - audit
+      - rule_3.4.2.3
+      - firewall
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.2.3 | AUDIT | Ensure unnecessary services and ports are not accepted | Get list of services and ports"
+        ansible.builtin.shell: "firewall-cmd --get-active-zones | awk '!/:/ {print $1}' | while read ZN; do firewall-cmd --list-all --zone=$ZN; done"
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_2_3_services_ports
+
+      - name: "3.4.2.3 | AUDIT | Ensure firewalld drops unnecessary services and ports | Show services and ports"
+        ansible.builtin.debug:
+            msg:
+                - "The items below are the services and ports that are accepted, please correct as needed"
+                - "{{ amazon2cis_3_4_2_3_services_ports.stdout_lines }}"
+
+      - name: "3.4.2.3 | AUDIT | Ensure firewalld drops unnecessary services and ports | Warn Count"
+        when: amazon2cis_3_4_2_3_services_ports.stdout | length > 0
+        vars:
+            warn_control_id: '3.4.2.3'
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: "3.4.2.4 | AUDIT | Ensure network interfaces are assigned to appropriate zone"
+  when:
+      - amazon2cis_rule_3_4_2_4
+      - amazon2cis_system_firewall == "firewalld"
+  tags:
+      - level1
+      - manual
+      - audit
+      - rule_3.4.2.4
+      - firewall
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.2.4 | AUDIT | Ensure network interfaces are assigned to appropriate zone | capture output"
+        ansible.builtin.shell: find /sys/class/net/* -maxdepth 1 | awk -F"/" '{print $NF}' | while read -r netint; do [ "$netint" != "lo" ] && firewall-cmd --get-active-zones | grep -B1 $netint; done
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_2_4_nics_and_zones
+
+      - name: "3.4.2.4 | AUDIT | Ensure network interfaces are assigned to appropriate zone | Show nics and zones"
+        ansible.builtin.debug:
+            msg:
+                - "The items below are the system network interfaces and associated firewalld zones, please correct as needed"
+                - "{{ amazon2cis_3_4_2_4_nics_and_zones.stdout_lines }}"
+
+      - name: "3.4.2.4 | AUDIT | Ensure network interfaces are assigned to appropriate zone | Warn Count"
+        when: amazon2cis_3_4_2_4_nics_and_zones.stdout | length > 0
+        vars:
+            warn_control_id: '3.4.2.4'
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+
+- name: "3.4.3.1 | PATCH | Ensure nftables is installed"
+  when:
+      - amazon2cis_rule_3_4_3_1
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.3.1
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  vars:
+      ansible_python_interpreter: /bin/python
+  ansible.builtin.package:
+      name: nftables
+      state: present
+
+- name: "3.4.3.2 | PATCH | Ensure iptables are flushed"
+  when:
+      - "'iptables' in ansible_facts.packages"
+      - amazon2cis_firewall != "iptables"
+      - amazon2cis_rule_3_4_3_2
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - manual
+      - patch
+      - rule_3.4.3.2
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.3.2 | PATCH | Ensure iptables are flushed | Flush IPv4 tables"
+        ansible.builtin.command: iptables -F
+
+      - name: "3.4.3.2 | PATCH | Ensure iptables are flushed | Flush IPv6 tables"
+        ansible.builtin.command: ip6tables -F
+        when:
+            - amazon2cis_ipv6_required
+
+- name: "3.4.3.3 | PATCH | Ensure an nftables table exists"
+  when:
+      - amazon2cis_rule_3_4_3_3
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.3.3
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.3.3 | AUDIT | Ensure an nftables table exists | Check for tables"
+        ansible.builtin.command: nft list tables
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_3_nft_tables
+
+      - name: "3.4.3.3 | AUDIT | Ensure an nftables table exists | Show existing tables"
+        when:
+            - amazon2cis_3_4_3_3_nft_tables.stdout | length > 0
+        ansible.builtin.debug:
+            msg:
+                - "Below are the current nft tables, please review"
+                - "{{ amazon2cis_3_4_3_3_nft_tables.stdout_lines }}"
+
+      - name: "3.4.3.3 | AUDIT | Ensure an nftables table exists | Alert on no tables"
+        when:
+            - amazon2cis_3_4_3_3_nft_tables.stdout | length == 0
+            - not amazon2cis_nft_tables_autoNewTable
+        ansible.builtin.debug:
+            msg:
+                - "Warning! You currently have no nft tables, please review your setup"
+                - 'Use the command "nft create table inet <table name>" to create a new table'
+
+      - name: "3.4.3.3 | WARN | Ensure an nftables table exists | Warn Count"
+        when: not amazon2cis_nft_tables_autoNewTable
+        vars:
+            warn_control_id: '3.4.3.3'
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+      - name: "3.4.3.3 | PATCH | Ensure an nftables table exists | Create table if needed"
+        ansible.builtin.command: nft create table inet "{{ amazon2cis_nft_tables_tablename }}"
+        failed_when: false
+        when:
+            - amazon2cis_nft_tables_autoNewTable
+
+- name: "3.4.3.4 | PATCH | Ensure nftables base chains exist"
+  when:
+      - amazon2cis_rule_3_4_3_4
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.3.4
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.3.4 | AUDIT | Ensure nftables base chains exist | Get current chains for INPUT"
+        ansible.builtin.shell: nft list ruleset | grep 'hook input'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_4_input_chains
+
+      - name: "3.4.3.4 | AUDIT | Ensure nftables base chains exist | Get current chains for FORWARD"
+        ansible.builtin.shell: nft list ruleset | grep 'hook forward'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_4_forward_chains
+
+      - name: "3.4.3.4 | AUDIT | Ensure nftables base chains exist | Get current chains for OUTPUT"
+        ansible.builtin.shell: nft list ruleset | grep 'hook output'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_4_output_chains
+
+      - name: "3.4.3.4 | AUDIT | Ensure nftables base chains exist | Display chains for review"
+        when:
+            - not amazon2cis_nft_tables_autochaincreate
+        ansible.builtin.debug:
+            msg:
+                - "Below are the current INPUT chains"
+                - "{{ amazon2cis_3_4_3_4_input_chains.stdout_lines }}"
+                - "Below are the current FORWARD chains"
+                - "{{ amazon2cis_3_4_3_4_forward_chains.stdout_lines }}"
+                - "Below are teh current OUTPUT chains"
+                - "{{ amazon2cis_3_4_3_4_output_chains.stdout_lines }}"
+
+      - name: "3.4.3.3 | WARN | Ensure nftables base chains exist | Warn Count"
+        when: not amazon2cis_nft_tables_autochaincreate
+        vars:
+            warn_control_id: '3.4.3.4'
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+      - name: "3.4.3.4 | PATCH | Ensure nftables base chains exist | Create chains if needed"
+        when:
+            - amazon2cis_nft_tables_autochaincreate
+        ansible.builtin.command: "{{ item }}"
+        failed_when: false
+        with_items:
+            - nft create chain inet "{{ amazon2cis_nft_tables_tablename }}" input { type filter hook input priority 0 \; }
+            - nft create chain inet "{{ amazon2cis_nft_tables_tablename }}" forward { type filter hook forward priority 0 \; }
+            - nft create chain inet "{{ amazon2cis_nft_tables_tablename }}" output { type filter hook output priority 0 \; }
+
+- name: "3.4.3.5 | PATCH | Ensure nftables loopback traffic is configured"
+  when:
+      - amazon2cis_rule_3.4.3.5
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.3.5
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.3.5 | AUDIT | Ensure nftables loopback traffic is configured | Gather iif lo accept existence"
+        ansible.builtin.shell: nft list ruleset | awk '/hook input/,/}/' | grep 'iif "lo" accept'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_5_iiflo
+
+      - name: "3.4.3.5 | AUDIT | Ensure nftables loopback traffic is configured | Gather ip saddr existence"
+        ansible.builtin.shell: nft list ruleset | awk '/hook input/,/}/' | grep 'ip saddr'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_5_ipsaddr
+
+      - name: "3.4.3.5 | AUDIT | Ensure nftables loopback traffic is configured | Gather ip6 saddr existence"
+        ansible.builtin.shell: nft list ruleset | awk '/hook input/,/}/' | grep 'ip6 saddr'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_2_ip6saddr
+
+      - name: "3.4.3.5 | PATCH | Ensure nftables loopback traffic is configured | Set iif lo accept rule"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input iif lo accept
+        when:
+            - '"iif \"lo\" accept" not in amazon2cis_3_4_3_5_iiflo.stdout'
+
+      - name: "3.4.3.5 | PATCH | Ensure nftables loopback traffic is configured | Set ip sddr rule"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input ip saddr 127.0.0.0/8 counter drop
+        when:
+            - '"ip saddr 127.0.0.0/8 counter packets 0 bytes 0 drop" not in amazon2cis_3_4_3_5_ipsaddr.stdout'
+
+      - name: "3.4.3.5 | PATCH | Ensure nftables loopback traffic is configured | Set ip6 saddr rule"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input ip6 saddr ::1 counter drop
+        when:
+            - '"ip6 saddr ::1 counter packets 0 bytes 0 drop" not in amazon2cis_3_4_3_5_ip6saddr.stdout'
+
+- name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured"
+  when:
+      - amazon2cis_rule_3_4_3_6
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - manual
+      - patch
+      - rule_3.4.3.6
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.3.6 | AUDIT | Ensure nftables outbound and established connections are configured | Gather incoming connection rules"
+        ansible.builtin.shell: nft list ruleset | awk '/hook input/,/}/' | grep -E 'ip protocol (tcp|udp|icmp) ct state'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_6_inconnectionrule
+
+      - name: "3.4.3.6 | AUDIT | Ensure nftables outbound and established connections are configured | Gather outbound connection rules"
+        ansible.builtin.shell: nft list ruleset | awk '/hook output/,/}/' | grep -E 'ip protocol (tcp|udp|icmp) ct state'
+        changed_when: false
+        failed_when: false
+        register: amazon2cis_3_4_3_6_outconnectionrule
+
+      - name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured | Add input tcp established accpet policy"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input ip protocol tcp ct state established accept
+        when:
+            - '"ip protocol tcp ct state established accept" not in amazon2cis_3_4_3_6_inconnectionrule.stdout'
+
+      - name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured | Add input udp established accpet policy"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input ip protocol udp ct state established accept
+        when:
+            - '"ip protocol udp ct state established accept" not in amazon2cis_3_4_3_6_inconnectionrule.stdout'
+
+      - name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured | Add input icmp established accpet policy"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input ip protocol icmp ct state established accept
+        when:
+            - '"ip protocol icmp ct state established accept" not in amazon2cis_3_4_3_6_inconnectionrule.stdout'
+
+      - name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured | Add output tcp new, related, established accpet policy"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" output ip protocol tcp ct state new,related,established accept
+        when:
+            - '"ip protocol tcp ct state established,related,new accept" not in amazon2cis_3_4_3_6_outconnectionrule.stdout'
+
+      - name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured | Add output udp new, related, established accpet policy"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" output ip protocol udp ct state new,related,established accept
+        when:
+            - '"ip protocol udp ct state established,related,new accept" not in amazon2cis_3_4_3_6_outconnectionrule.stdout'
+
+      - name: "3.4.3.6 | PATCH | Ensure nftables outbound and established connections are configured | Add output icmp new, related, established accpet policy"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" output ip protocol icmp ct state new,related,established accept
+        when:
+            - '"ip protocol icmp ct state established,related,new accept" not in amazon2cis_3_4_3_6_outconnectionrule.stdout'
+
+- name: "3.4.3.7 | PATCH | Ensure nftables default deny firewall policy"
+  when:
+      - amazon2cis_rule_3_4_3_7
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - manual
+      - patch
+      - rule_3.4.3.7
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  block:
+      - name: "3.4.3.7 | AUDIT | Ensure nftables default deny firewall policy | Check for hook input deny policy"
+        ansible.builtin.shell: nft list table inet "{{ amazon2cis_nft_tables_tablename }}" | grep 'hook input'
+        failed_when: false
+        changed_when: false
+        register: amazon2cis_3_4_3_7_inputpolicy
+
+      - name: "3.4.3.7 | AUDIT | Ensure nftables default deny firewall policy | Check for hook forward deny policy"
+        ansible.builtin.shell: nft list table inet "{{ amazon2cis_nft_tables_tablename }}" | grep 'hook forward'
+        failed_when: false
+        changed_when: false
+        register: amazon2cis_3_4_3_7_forwardpolicy
+
+      - name: "3.4.3.7 | AUDIT | Ensure nftables default deny firewall policy | Check for hook output deny policy"
+        ansible.builtin.shell: nft list table inet "{{ amazon2cis_nft_tables_tablename }}" | grep 'hook output'
+        failed_when: false
+        changed_when: false
+        register: amazon2cis_3_4_3_7_outputpolicy
+
+      - name: "3.4.3.7 | AUDIT | Ensure nftables default deny firewall policy | Check for SSH allow"
+        ansible.builtin.shell: nft list table inet "{{ amazon2cis_nft_tables_tablename }}" | grep 'ssh'
+        failed_when: false
+        changed_when: false
+        register: amazon2cis_3_4_3_7_sshallowcheck
+
+      - name: "3.4.3.7 | PATCH | Ensure nftables default deny firewall policy | Enable SSH traffic"
+        ansible.builtin.command: nft add rule inet "{{ amazon2cis_nft_tables_tablename }}" input tcp dport ssh accept
+        when:
+            - '"tcp dport ssh accept" not in amazon2cis_3_4_3_7_sshallowcheck.stdout'
+
+      - name: "3.4.3.7 | PATCH | Ensure nftables default deny firewall policy | Set hook input deny policy"
+        ansible.builtin.command: nft chain inet "{{ amazon2cis_nft_tables_tablename }}" input { policy drop \; }
+        when:
+            - '"type filter hook input priority 0; policy drop;" not in amazon2cis_3_4_3_7_inputpolicy.stdout'
+
+      - name: "3.4.3.7 | PATCH | Ensure nftables default deny firewall policy | Create hook forward deny policy"
+        ansible.builtin.command: nft chain inet "{{ amazon2cis_nft_tables_tablename }}" forward { policy drop \; }
+        when:
+            - '"type filter hook forward priority 0; policy drop;" not in amazon2cis_3_4_3_7_forwardpolicy.stdout'
+
+      - name: "3.4.3.7 | PATCH | Ensure nftables default deny firewall policy | Create hook output deny policy"
+        ansible.builtin.command: nft chain inet "{{ amazon2cis_nft_tables_tablename }}" output { policy drop \; }
+        when:
+            - '"type filter hook output priority 0; policy drop;" not in amazon2cis_3_4_3_7_outputpolicy.stdout'
+
+- name: "3.4.3.8 | PATCH | Ensure nftables service is enabled and active"
+  when:
+      - amazon2cis_rule_3_4_3_8
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.3.8
+      - firewall
+      - nftables
+      - NIST800-53R5_CA-9
+  ansible.builtin.systemd:
+      name: nftables
+      enabled: true
+      state: started
+
+- name: "3.4.3.9 | PATCH | Ensure nftables rules are permanent"
+  ansible.builtin.lineinfile:
+      path: /etc/sysconfig/nftables.conf
+      state: present
+      insertafter: EOF
+      line: include "/etc/nftables/inet-{{ amazon2cis_nft_tables_tablename }}.rules"
+  when:
+      - amazon2cis_rule_3_4_3_9
+      - amazon2cis_system_firewall == "nftables"
+  tags:
+      - level1
+      - automated
+      - patch
+      - rule_3.4.3.9
+      - firewall
+      - nftables
+
+
+
+
+
+

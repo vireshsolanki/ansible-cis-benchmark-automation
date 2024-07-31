@@ -1,0 +1,160 @@
+---
+### Disable IPv6
+- name: "3.1.1 | PATCH | Disable IPv6"
+  when:
+      - not amazon2cis_ipv6_required
+      - amazon2cis_rule_3_1_1
+  notify: Sysctl_flush_ipv6_routes
+  tags:
+      - level2
+      - manual
+      - patch
+      - rule_3.1.1
+      - ipv6
+      - NIST800-53R5_CM-7
+  block:
+      - name: "3.1.1 | PATCH | Verify if IPv6 is enabled on the system | disable all except localhost"
+        ansible.posix.sysctl:
+            name: "{{ item }}"
+            value: '1'
+            sysctl_set: true
+            sysctl_file: "{{ amazon2cis_ipv6_sysctl_file }}"
+        loop:
+            - net.ipv6.conf.all.disable_ipv6
+            - net.ipv6.conf.default.disable_ipv6
+
+      - name: "3.1.1 | PATCH | Verify if IPv6 is enabled on the system | disable localhost sysctl"
+        when:
+            - amazon2cis_ipv6_disable_localhost
+        ansible.posix.sysctl:
+            name: net.ipv6.conf.lo.disable_ipv6
+            value: '1'
+            sysctl_set: true
+            sysctl_file: "{{ amazon2cis_ipv6_sysctl_file }}"
+
+      - name: "3.1.1 | PATCH | Verify if IPv6 is enabled on the system | disable localhost /etc/hosts"
+        when:
+            - amazon2cis_ipv6_disable_localhost
+        ansible.builtin.lineinfile:
+            path: /etc/hosts
+            regexp: '^(::1.*)'
+            line: '#\1'
+            backrefs: true
+
+
+- name: "3.2.1 | PATCH | Ensure dccp kernel module is not available"
+  when:
+      - amazon2cis_rule_3_2_1
+  tags:
+      - level2-server
+      - level2-workstation
+      - automated
+      - dccp
+      - patch
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_SI-4
+      - rule_3.2.1
+  block:
+      - name: "3.2.1 | PATCH | Ensure dccp kernel module is not available | CIS"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install dccp(\\s|$)"
+            line: "install dccp /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "3.2.1 | PATCH | Ensure dccp kernel module is not available | blacklist"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist dccp(\\s|$)"
+            line: "blacklist dccp"
+            create: true
+            mode: '0600'
+
+- name: "3.2.2 | PATCH | Ensure tipc kernel module is not available"
+  when:
+      - amazon2cis_rule_3_2_2
+  tags:
+      - level2-server
+      - level2-workstation
+      - automated
+      - patch
+      - tipc
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_SI-4
+      - rule_3.2.2
+
+  block:
+      - name: "3.2.2 | PATCH | Ensure tipc kernel module is not available | CIS"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install tipc(\\s|$)"
+            line: "install tipc /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "3.2.2 | PATCH | Ensure tipc kernel module is not available | blacklist"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist tipc(\\s|$)"
+            line: "blacklist tipc"
+            create: true
+            mode: '0600'
+
+- name: "3.2.3 | PATCH | Ensure rds kernel module is not available"
+  when:
+      - amazon2cis_rule_3_2_3
+  tags:
+      - level2-server
+      - level2-workstation
+      - automated
+      - patch
+      - rds
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_SI-4
+      - rule_3.2.3
+  block:
+      - name: "3.2.3 | PATCH | Ensure rds kernel module is not available | CIS"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install rpc(\\s|$)"
+            line: "install rds /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "3.2.3 | PATCH | Ensure rds kernel module is not available | blacklist"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist rpc(\\s|$)"
+            line: "blacklist rds"
+            create: true
+            mode: '0600'
+
+- name: "3.2.4 | PATCH | Ensure sctp kernel module is not available"
+  when:
+      - amazon2cis_rule_3_2_4
+  tags:
+      - level2-server
+      - level2-workstation
+      - automated
+      - patch
+      - sctp
+      - NIST800-53R5_CM-7
+      - NIST800-53R5_SI-4
+      - rule_3.2.4
+  block:
+      - name: "3.2.4 | PATCH | Ensure sctp kernel module is not available | CIS"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install sctp(\\s|$)"
+            line: "install sctp /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "3.2.4 | PATCH | Ensure sctp kernel module is not available | blacklist"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist sctp(\\s|$)"
+            line: "blacklist sctp"
+            create: true
+            mode: '0600'

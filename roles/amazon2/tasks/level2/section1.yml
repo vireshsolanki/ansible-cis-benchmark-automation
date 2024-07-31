@@ -1,0 +1,371 @@
+---
+
+- name: "1.1.1.6 | PATCH | Ensure squashfs kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_6
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.1.6
+      - squashfs
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.6 | PATCH | Ensure squashfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install squashfs(\\s|$)"
+            line: "install squashfs /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.6 | PATCH | Ensure squashfs kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist squashfs(\\s|$)"
+            line: "blacklist squashfs"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.6 | PATCH | Ensure cramfs kernel module is not available | Remove squashfs module"
+        community.general.modprobe:
+            name: squashfs
+            state: absent
+
+- name: "1.1.1.7 | PATCH | Ensure udf kernel module is not available"
+  when:
+      - amazon2cis_rule_1_1_1_7
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.1.7
+      - udf
+      - modprobe
+      - NIST800-53R5_CM-7
+  block:
+      - name: "1.1.1.7 | PATCH | Ensure udf kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/CIS.conf
+            regexp: "^(#)?install udf(\\s|$)"
+            line: "install udf /bin/true"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.7 | PATCH | Ensure udf kernel module is not available | Edit modprobe config"
+        ansible.builtin.lineinfile:
+            path: /etc/modprobe.d/blacklist.conf
+            regexp: "^(#)?blacklist udf(\\s|$)"
+            line: "blacklist udf"
+            create: true
+            mode: '0600'
+
+      - name: "1.1.1.7 | PATCH | Remove udf module"
+        community.general.modprobe:
+            name: udf
+            state: absent
+
+
+#### Ensure separate /home partition
+
+
+- name: "1.1.2.3.1 | PATCH | Ensure /home is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_3_1
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.3.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.3.1'
+      required_mount: '/home'
+  block:
+      - name: "1.1.2.3.1 | AUDIT | Ensure /home is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.3.1 | AUDIT | Ensure /home is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+
+### Creating separate /var partition
+
+- name: "1.1.2.4.1 | PATCH | Ensure /var is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_4_1
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.4.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.4.1'
+      required_mount: '/var'
+  block:
+      - name: "1.1.2.4.1 | AUDIT | Ensure /var is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.4.1 | AUDIT | Ensure /var is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: |
+         "1.1.2.4.2 | PATCH | Ensure nodev option set on /var partition
+          1.1.2.4.3 | PATCH | Ensure nosuid option set on /var partition
+  when:
+      - item.mount == "/var"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_4_2 or
+        amazon2cis_rule_1_1_2_4_3
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.4.2
+      - rule_1.1.2.4.3
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /var
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_4_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_4_3 %}nosuid{% endif %}
+  notify: Remount var
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+
+### Ensure that /var/tmp partition exists and create it
+
+
+- name: "1.1.2.5.1 | PATCH | Ensure /var/tmp is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_5_1
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.5.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.5.1'
+      required_mount: '/var/tmp'
+  block:
+      - name: "1.1.2.5.1 | AUDIT | Ensure /var/tmp is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.5.1 | AUDIT | Ensure /var/tmp is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: |
+         "1.1.2.5.2 | PATCH | Ensure nodev option set on /var/tmp partition
+          1.1.2.5.3 | PATCH | Ensure nosuid option set on /var/tmp partition
+          1.1.2.5.4 | PATCH | Ensure noexec option set on /var/tmp partition"
+  when:
+      - item.mount == "/var/tmp"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_5_2 or
+        amazon2cis_rule_1_1_2_5_3 or
+        amazon2cis_rule_1_1_2_5_4
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.5.2
+      - rule_1.1.2.5.3
+      - rule_1.1.2.5.4
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /var/tmp
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_5_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_5_3 %}nosuid,{% endif %}{% if amazon2cis_rule_1_1_2_5_4 %}noexec{% endif %}
+  notify: Remount var_tmp
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+###Ensure partition exists for /var/log and create it
+
+- name: "1.1.2.6.1 | PATCH | Ensure /var/log is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_6_1
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.6.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.6.1'
+      required_mount: '/var/log'
+
+  block:
+      - name: "1.1.2.6.1 | AUDIT | Ensure /var/log is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.6.1 | AUDIT | Ensure /var/log is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: |
+         "1.1.2.6.2 | PATCH | Ensure nodev option set on /var/log partition
+          1.1.2.6.3 | PATCH | Ensure nosuid option set on /var/log partition
+          1.1.2.6.4 | PATCH | Ensure noexec option set on /var/log partition"
+  when:
+      - item.mount == "/var/log"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_6_2 or
+        amazon2cis_rule_1_1_2_6_3 or
+        amazon2cis_rule_1_1_2_6_4
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.6.2
+      - rule_1.1.2.6.3
+      - rule_1.1.2.6.4
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /var/log
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_6_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_6_3 %}nosuid,{% endif %}{% if amazon2cis_rule_1_1_2_6_4 %}noexec{% endif %}
+  notify: Remount var_log
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+
+###Ensure /var/log/audit partition
+
+
+- name: "1.1.2.7.1 | PATCH | Ensure /var/log/audit is a seperate partition"
+  when:
+      - required_mount not in mount_names
+      - amazon2cis_rule_1_1_2_7_1
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.7.1
+      - mounts
+      - NIST800-53R5_CM-7
+  vars:
+      warn_control_id: '1.1.2.7.1'
+      required_mount: '/var/log/audit'
+  block:
+      - name: "1.1.2.7.1 | AUDIT | Ensure /var/log/audit is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.2.7.1 | AUDIT | Ensure /var/log/audit is a separate partition | Warn Count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+
+- name: |
+         "1.1.2.7.2 | PATCH | Ensure nodev option set on /var/log/audit partition
+          1.1.2.7.3 | PATCH | Ensure nosuid option set on /var/log/audit partition
+          1.1.2.7.4 | PATCH | Ensure noexec option set on /var/log/audit partition"
+  when:
+      - item.mount == "/var/log/audit"
+      - amazon2cis_tmp_svc
+      - amazon2cis_rule_1_1_2_7_2 or
+        amazon2cis_rule_1_1_2_7_3 or
+        amazon2cis_rule_1_1_2_7_4
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.1.2.7.2
+      - rule_1.1.2.7.3
+      - rule_1.1.2.7.4
+      - mounts
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_MP-2
+  ansible.posix.mount:
+      name: /var/log/audit
+      src: "{{ item.device }}"
+      fstype: "{{ item.fstype }}"
+      state: present
+      opts: defaults,{% if amazon2cis_rule_1_1_2_7_2 %}nodev,{% endif %}{% if amazon2cis_rule_1_1_2_7_3 %}nosuid,{% endif %}{% if amazon2cis_rule_1_1_2_7_4 %}noexec{% endif %}
+  notify: Remount var_log_audit
+  with_items:
+      - "{{ ansible_mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+
+
+### Ensure repo_gpgcheck is activated or not
+
+- name: "1.2.3 | PATCH | Ensure repo_gpgcheck is globally activated"
+  when:
+      - amazon2cis_rule_1_2_3
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.2.3
+      - gpg
+      - NIST800-53R5_SI-2
+  ansible.builtin.replace:
+      path: /etc/yum.conf
+      regexp: ^repo_gpgcheck\s*=\s*0
+      replace: "repo_gpgcheck=1"
+
+
+
+### SElinux State is in enforcing or not
+- name: "1.5.1.5 | PATCH | Ensure the SELinux state is enforcing"
+  when:
+      - not amazon2cis_selinux_disable
+      - not amazon2cis_selinux_state == "permissive"
+      - amazon2cis_rule_1_5_1_5
+  tags:
+      - level2
+      - automated
+      - patch
+      - rule_1.5.1.5
+      - selinux
+      - NIST800-53R5_AC-3
+      - NIST800-53R5_SI-6
+  vars:
+      ansible_python_interpreter: "{{ python2_bin }}"
+  ansible.posix.selinux:
+      conf: /etc/selinux/config
+      policy: "{{ amazon2cis_selinux_pol }}"
+      state: enforcing
+
+
