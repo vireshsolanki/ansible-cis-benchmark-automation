@@ -25,6 +25,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_3.4.1
@@ -52,9 +53,11 @@
 
   when:
       - ubtu22cis_rule_3_4_2
+      - ubtu22cis_level2
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_3.4.2
@@ -81,8 +84,10 @@
             mode: '0600'
   when:
       - ubtu22cis_rule_3_4_3
+      - ubtu22cis_level2
   tags:
       - level2-server
+      - ubtu22cis_level2
       - level2-workstation
       - automated
       - patch
@@ -112,9 +117,11 @@
 
   when:
       - ubtu22cis_rule_3_4_4
+      - ubtu22cis_level2
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_3.4.4

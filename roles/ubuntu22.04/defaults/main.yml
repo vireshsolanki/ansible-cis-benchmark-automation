@@ -95,8 +95,8 @@ ubtu22cis_rule_1_2_1: true
 ubtu22cis_rule_1_2_2: true
 ubtu22cis_rule_1_3_1: true
 ubtu22cis_rule_1_3_2: true
-ubtu22cis_rule_1_4_1: true
-ubtu22cis_rule_1_4_2: true
+ubtu22cis_rule_1_4_1: false
+ubtu22cis_rule_1_4_2: false
 ubtu22cis_rule_1_4_3: false
 ubtu22cis_rule_1_5_1: true
 ubtu22cis_rule_1_5_2: true
@@ -126,10 +126,10 @@ ubtu22cis_rule_1_9: true
 
 ## Section 2 Fixes
 # Section 2 is Services (Special Purpose Services, and service clients)
-ubtu22cis_rule_2_1_1_1: true
-ubtu22cis_rule_2_1_1_2: true
-ubtu22cis_rule_2_1_1_3: true
-ubtu22cis_rule_2_1_1_4: true
+ubtu22cis_rule_2_1_1_1: false
+ubtu22cis_rule_2_1_1_2: false
+ubtu22cis_rule_2_1_1_3: false
+ubtu22cis_rule_2_1_1_4: false
 # Chrony
 ubtu22cis_rule_2_1_2_1: true
 ubtu22cis_rule_2_1_2_2: true
@@ -145,19 +145,19 @@ ubtu22cis_rule_2_1_4_3: true
 ubtu22cis_rule_2_1_4_4: true
 # Services
 ubtu22cis_rule_2_2_1: true
-ubtu22cis_rule_2_2_2: true
+ubtu22cis_rule_2_2_2: false
 ubtu22cis_rule_2_2_3: true
-ubtu22cis_rule_2_2_4: true
+ubtu22cis_rule_2_2_4: false
 ubtu22cis_rule_2_2_5: true
 ubtu22cis_rule_2_2_6: true
-ubtu22cis_rule_2_2_7: true
+ubtu22cis_rule_2_2_7: false
 ubtu22cis_rule_2_2_8: true
-ubtu22cis_rule_2_2_9: true
+ubtu22cis_rule_2_2_9: false
 ubtu22cis_rule_2_2_10: true
 ubtu22cis_rule_2_2_11: true
-ubtu22cis_rule_2_2_12: true
-ubtu22cis_rule_2_2_13: true
-ubtu22cis_rule_2_2_14: true
+ubtu22cis_rule_2_2_12: false
+ubtu22cis_rule_2_2_13: false
+ubtu22cis_rule_2_2_14: false
 ubtu22cis_rule_2_2_15: true
 ubtu22cis_rule_2_2_16: true
 ubtu22cis_rule_2_2_17: true
@@ -169,39 +169,38 @@ ubtu22cis_rule_2_3_4: true
 ubtu22cis_rule_2_3_5: true
 ubtu22cis_rule_2_3_6: true
 # Non-essential services
-ubtu22cis_rule_2_4: true
-
+ubtu22cis_rule_2_4: false
 ## Section 3 Network Configuration
 # Disable Unused Network
-ubtu22cis_rule_3_1_1: true
-ubtu22cis_rule_3_1_2: true
+ubtu22cis_rule_3_1_1: false
+ubtu22cis_rule_3_1_2: false
 # Network Parameters (Host Only)
-ubtu22cis_rule_3_2_1: true
-ubtu22cis_rule_3_2_2: true
+ubtu22cis_rule_3_2_1: false
+ubtu22cis_rule_3_2_2: false
 # Network Parameters (Host and Router)
-ubtu22cis_rule_3_3_1: true
-ubtu22cis_rule_3_3_2: true
-ubtu22cis_rule_3_3_3: true
-ubtu22cis_rule_3_3_4: true
-ubtu22cis_rule_3_3_5: true
-ubtu22cis_rule_3_3_6: true
-ubtu22cis_rule_3_3_7: true
-ubtu22cis_rule_3_3_8: true
-ubtu22cis_rule_3_3_9: true
+ubtu22cis_rule_3_3_1: false
+ubtu22cis_rule_3_3_2: false
+ubtu22cis_rule_3_3_3: false
+ubtu22cis_rule_3_3_4: false
+ubtu22cis_rule_3_3_5: false
+ubtu22cis_rule_3_3_6: false
+ubtu22cis_rule_3_3_7: false
+ubtu22cis_rule_3_3_8: false
+ubtu22cis_rule_3_3_9: false
 # Uncommon Network Protocols
-ubtu22cis_rule_3_4_1: true
-ubtu22cis_rule_3_4_2: true
-ubtu22cis_rule_3_4_3: true
-ubtu22cis_rule_3_4_4: true
+ubtu22cis_rule_3_4_1: false
+ubtu22cis_rule_3_4_2: false
+ubtu22cis_rule_3_4_3: false
+ubtu22cis_rule_3_4_4: false
 # Firewall Configuration
 # UFW
-ubtu22cis_rule_3_5_1_1: true
-ubtu22cis_rule_3_5_1_2: true
-ubtu22cis_rule_3_5_1_3: true
-ubtu22cis_rule_3_5_1_4: true
-ubtu22cis_rule_3_5_1_5: true
+ubtu22cis_rule_3_5_1_1: false
+ubtu22cis_rule_3_5_1_2: false
+ubtu22cis_rule_3_5_1_3: false
+ubtu22cis_rule_3_5_1_4: false
+ubtu22cis_rule_3_5_1_5: false
 ubtu22cis_rule_3_5_1_6: true
-ubtu22cis_rule_3_5_1_7: true
+ubtu22cis_rule_3_5_1_7: false
 # nftables
 ubtu22cis_rule_3_5_2_1: true
 ubtu22cis_rule_3_5_2_2: true
@@ -214,17 +213,17 @@ ubtu22cis_rule_3_5_2_8: true
 ubtu22cis_rule_3_5_2_9: true
 ubtu22cis_rule_3_5_2_10: true
 # iptables
-ubtu22cis_rule_3_5_3_1_1: true
-ubtu22cis_rule_3_5_3_1_2: true
-ubtu22cis_rule_3_5_3_1_3: true
-ubtu22cis_rule_3_5_3_2_1: true
-ubtu22cis_rule_3_5_3_2_2: true
-ubtu22cis_rule_3_5_3_2_3: true
-ubtu22cis_rule_3_5_3_2_4: true
-ubtu22cis_rule_3_5_3_3_1: true
-ubtu22cis_rule_3_5_3_3_2: true
-ubtu22cis_rule_3_5_3_3_3: true
-ubtu22cis_rule_3_5_3_3_4: true
+ubtu22cis_rule_3_5_3_1_1: false
+ubtu22cis_rule_3_5_3_1_2: false
+ubtu22cis_rule_3_5_3_1_3: false
+ubtu22cis_rule_3_5_3_2_1: false
+ubtu22cis_rule_3_5_3_2_2: false
+ubtu22cis_rule_3_5_3_2_3: false
+ubtu22cis_rule_3_5_3_2_4: false
+ubtu22cis_rule_3_5_3_3_1: false
+ubtu22cis_rule_3_5_3_3_2: false
+ubtu22cis_rule_3_5_3_3_3: false
+ubtu22cis_rule_3_5_3_3_4: false
 
 #is Logging and Auditing (Configure System Accounting (auditd), Configure Data Retention, and Configure Logging)
 ubtu22cis_rule_4_1_1_1: true
@@ -539,11 +538,11 @@ ubtu22cis_grub_user_file: /etc/grub.d/00_user
 ubtu22cis_bootloader_password_hash: "grub.pbkdf2.sha512.changethispassword"  # pragma: allowlist secret
 ubtu22cis_set_boot_pass: false
 
-ubtu22cis_grub_file: /boot/grub/grub.cfg
+# ubtu22cis_grub_file: /boot/grub/grub.cfg
 
 ## Controls 1.5.x
 # Ability to set file in which the kernel systcl changes are placed
-ubtu22cis_sysctl_kernel_conf: /etc/sysctl.d/98_cis_kernel.conf
+# ubtu22cis_sysctl_kernel_conf: /etc/sysctl.d/98_cis_kernel.conf
 
 ## Controls 1.6.1.x - apparmor
 # AppArmor security policies define what system resources applications can access and their privileges.
@@ -655,7 +654,7 @@ ubtu22cis_firewall_package: "ufw"
 
 # This variable is used in a preliminary task that forces the UFW firewall to use /etc/sysctl.conf
 # settings. If set to "true" the task will get done in the prelim section of the role.
-ubtu22cis_ufw_use_sysctl: true
+ubtu22cis_ufw_use_sysctl: false
 
 ## Control 3.5.1.5 - Ensure ufw outbound connections are configured
 # The value of this variable represents the ports for the firewall to allow oubound traffic from.
@@ -738,7 +737,7 @@ ubtu22cis_auditd:
 # The options for this variable are `rsyslog` or `journald`.
 ubtu22cis_syslog_service: rsyslog
 # This variable specifies the address of the remote log host where logs are being sent.
-ubtu22cis_remote_log_server: 192.168.2.100
+# ubtu22cis_remote_log_server: 192.168.2.100
 # This variable expresses whether the system is used as a log server or not.
 # If set to `true`, controls that interfere with log server functionality or
 # require that own system logs be sent to some other log server are skipped.
@@ -957,7 +956,7 @@ ubtu22cis_pass:
 ## Control 5.5.4 - Default user mask
 # The following variable specifies the "umask" to set in the `/etc/bash.bashrc` and `/etc/profile`.
 # The value needs to be `027` or more restrictive to comply with CIS standards
-ubtu22cis_bash_umask: '027'
+# ubtu22cis_bash_umask: '027'
 
 ## Control 5.5.5 - Configuring user shell timeout
 # This dictionary is related to ensuring the rule about user shell timeout

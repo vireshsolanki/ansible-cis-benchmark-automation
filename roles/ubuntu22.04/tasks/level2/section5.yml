@@ -11,6 +11,7 @@
         ubtu22cis_rule_5_3_5
   tags:
       - always
+      - ubtu22cis_level2
 
 - name: "5.3.4 | PATCH | Ensure users must provide password for escalation"
   ansible.builtin.replace:
@@ -26,6 +27,7 @@
       - level2-workstation
       - patch
       - sudo
+      - ubtu22cis_level2
       - rule_5.3.4
 
 
@@ -42,6 +44,7 @@
   tags:
       - level2-server
       - level1-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_5.2.12
@@ -59,6 +62,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_5.2.16

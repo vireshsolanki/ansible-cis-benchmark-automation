@@ -36,6 +36,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.1
@@ -60,6 +61,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.4
@@ -77,6 +79,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.5
@@ -93,6 +96,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.6
@@ -109,6 +113,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.7
@@ -141,6 +146,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.8
@@ -182,6 +188,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.10
@@ -205,6 +212,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - auditd
       - rule_4.1.4.11
@@ -222,6 +230,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -245,6 +254,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -262,6 +272,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -280,6 +291,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - journald
       - rule_4.2.1.1.4
@@ -313,6 +325,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - audit
       - journald
       - rule_4.2.1.2
@@ -329,6 +342,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - journald
       - rule_4.2.1.3
@@ -345,6 +359,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - journald
       - rule_4.2.1.4
@@ -361,6 +376,7 @@
   tags:
       - level1-server
       - level2-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -384,6 +400,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -412,6 +429,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -431,6 +449,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_4.2.2.1
@@ -447,6 +466,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_4.2.2.2
@@ -464,6 +484,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - journald
@@ -481,6 +502,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_4.2.2.4
@@ -546,6 +568,7 @@
       - ubtu22cis_syslog_service == 'rsyslog'
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - manual
       - patch
@@ -565,6 +588,7 @@
       - ubtu22cis_syslog_service == 'rsyslog'
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - automated
       - patch
@@ -599,6 +623,7 @@
       - ubtu22cis_syslog_service == 'rsyslog'
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - manual
       - patch
@@ -634,6 +659,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - logfiles
       - rule_4.2.3

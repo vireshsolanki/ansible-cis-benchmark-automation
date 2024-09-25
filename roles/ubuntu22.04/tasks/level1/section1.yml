@@ -31,6 +31,7 @@
       - ubtu22cis_rule_1_1_1_1
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - automated
       - patch
@@ -42,135 +43,137 @@
 
 #1.1.2.x Ensure separate partition exists for /tmp
 
+- name: "1.1.2.1 | AUDIT | Ensure /tmp is a separate partition"
+  block:
+      - name: "1.1.2.1 | AUDIT | Ensure /tmp is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
 
-
-# - name: "1.1.2.1 | AUDIT | Ensure /tmp is a separate partition"
-#   block:
-#       - name: "1.1.2.1 | AUDIT | Ensure /tmp is a separate partition | Absent"
-#         ansible.builtin.debug:
-#             msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
-
-#       - name: "1.1.2.1 | WARN | Ensure /tmp is a separate partition | warn_count"
-#         ansible.builtin.import_tasks:
-#             file: warning_facts.yml
-#   vars:
-#       warn_control_id: '1.1.2.1'
-#       required_mount: '/tmp'
-#   when:
-#       - required_mount not in mount_names
-#       - ubtu22cis_rule_1_1_2_1
-#   tags:
-#       - level1-server
-#       - level1-workstation
-#       - audit
-#       - mounts
-#       - rule_1.1.2.1
-#       - tmp
-
-# - name: |
-#     "1.1.2.2 | PATCH | Ensure nodev option set on /tmp partition | tmp_systemd"
-#     "1.1.2.3 | PATCH | Ensure noexec option set on /tmp partition | tmp_systemd"
-#     "1.1.2.4 | PATCH | Ensure nosuid option set on /tmp partition | tmp_systemd"
-#   ansible.builtin.template:
-#       src: etc/systemd/system/tmp.mount.j2
-#       dest: /etc/systemd/system/tmp.mount
-#       owner: root
-#       group: root
-#       mode: '0644'
-#   notify: Remount tmp
-#   with_items:
-#       - "{{ ansible_facts.mounts }}"
-#   loop_control:
-#       label: "{{ item.device }}"
-#   when:
-#       - "'/tmp' in mount_names"
-#       - item.mount == "/tmp"
-#       - tmp_mnt_type == 'tmp_systemd'
-#       - ubtu22cis_rule_1_1_2_2 or
-#         ubtu22cis_rule_1_1_2_3 or
-#         ubtu22cis_rule_1_1_2_4
-#   tags:
-#       - level1-server
-#       - level1-workstation
-#       - automated
-#       - patch
-#       - rule_1.1.2.2
-#       - rule_1.1.2.3
-#       - rule_1.1.2.4
-#       - tmp
-
-# - name: |
-#     "1.1.2.2 | PATCH | Ensure nodev option set on /tmp partition | fstab"
-#     "1.1.2.3 | PATCH | Ensure noexec option set on /tmp partition | fstab"
-#     "1.1.2.4 | PATCH | Ensure nosuid option set on /tmp partition | fstab"
-#   ansible.posix.mount:
-#       path: /tmp
-#       src: "{{ item.device }}"
-#       state: present
-#       fstype: "{{ item.fstype }}"
-#       opts: defaults,{% if ubtu22cis_rule_1_1_2_2 %}nodev,{% endif %}{% if ubtu22cis_rule_1_1_2_3 %}noexec,{% endif %}{% if ubtu22cis_rule_1_1_2_4 %}nosuid{% endif %}
-#   notify: Remount tmp
-#   with_items:
-#       - "{{ ansible_facts.mounts }}"
-#   loop_control:
-#       label: "{{ item.device }}"
-#   when:
-#       - "'/tmp' in mount_names"
-#       - tmp_mnt_type == 'fstab'
-#       - item.mount == "/tmp"
-#       - ubtu22cis_rule_1_1_2_1 or
-#         ubtu22cis_rule_1_1_2_2 or
-#         ubtu22cis_rule_1_1_2_3 or
-#         ubtu22cis_rule_1_1_2_4
-#   
-
-- name: |
-     1.1.2.1   | Configure /tmp
-     1.1.2.1 | Ensure /tmp is a separate partition
-     1.1.2.2 | Ensure nodev option set on /tmp partition
-     1.1.2.3 | Ensure nosuid option set on /tmp partition
-     1.1.2.4 | Ensure noexec option set on /tmp partition
-  ansible.builtin.template:
-    src: etc/systemd/system/tmp.mount.j2
-    dest: /etc/systemd/system/tmp.mount
-    owner: "root"
-    group: "root"
-    mode: "0644"
-  notify:
-    - systemd restart and enable tmp.mount
+      - name: "1.1.2.1 | WARN | Ensure /tmp is a separate partition | warn_count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+  vars:
+      warn_control_id: '1.1.2.1'
+      required_mount: '/tmp'
   when:
-    - ubtu22cis_rule_1_1_2_1
+      - required_mount not in mount_names
+      - ubtu22cis_rule_1_1_2_1
   tags:
-       - level1-server
-       - level1-workstation
-       - automated
-       - patch
-       - rule_1.1.2.2
-       - rule_1.1.2.2
-       - rule_1.1.2.3
-       - rule_1.1.2.4
-       - tmp
+      - level1-server
+      - level1-workstation
+      - ubtu22cis_level1
+      - audit
+      - mounts
+      - rule_1.1.2.1
+      - tmp
+
+- name: "1.1.2.2 | PATCH | Ensure nodev option set on /tmp partition"
+  ansible.builtin.set_fact:
+      tmp_partition_mount_options: "{{ tmp_partition_mount_options + [ 'nodev' ] }}"
+  changed_when: true
+  notify: Writing and remounting tmp
+  vars:
+      required_mount: '/tmp'
+  when:
+      - required_mount in mount_names
+      - ubtu22cis_rule_1_1_2_2
+  tags:
+      - level1-server
+      - level1-workstation
+      - ubtu22cis_level1
+      - automated
+      - patch
+      - rule_1.1.2.2
+      - tmp
+
+- name: "1.1.2.3 | PATCH | Ensure noexec option set on /tmp partition"
+  ansible.builtin.set_fact:
+      tmp_partition_mount_options: "{{ tmp_partition_mount_options + [ 'noexec' ] }}"
+  changed_when: true
+  notify: Writing and remounting tmp
+  vars:
+      required_mount: '/tmp'
+  when:
+      - required_mount in mount_names
+      - ubtu22cis_rule_1_1_2_3
+  tags:
+      - level1-server
+      - level1-workstation
+      - ubtu22cis_level1
+      - automated
+      - patch
+      - rule_1.1.2.3
+      - tmp
+
+- name: "1.1.2.4 | PATCH | Ensure nosuid option set on /tmp partition"
+  ansible.builtin.set_fact:
+      tmp_partition_mount_options: "{{ tmp_partition_mount_options + [ 'nosuid' ] }}"
+  changed_when: true
+  notify: Writing and remounting tmp
+  vars:
+      required_mount: '/tmp'
+  when:
+      - required_mount in mount_names
+      - ubtu22cis_rule_1_1_2_4
+  tags:
+      - level1-server
+      - level1-workstation
+      - ubtu22cis_level1
+      - automated
+      - patch
+      - rule_1.1.2.4
+      - tmp
+
 
 ###1.1.3.x Ensure separate partition exists for /var
 
-- name: |
-     rule_1_1_3_1  | Configure /var
-     rule_1_1_3_1 | Ensure separate partition exists for /var
-     rule_1_1_3_2 | Ensure nodev option set on /var partition
-     rule_1_1_3_3 | Ensure nosuid option set on /var partition
-  ansible.builtin.template:
-     src: etc/systemd/system/var.mount.j2
-     dest: /etc/systemd/system/var.mount
-     owner: "root"
-     group: "root"
-     mode: "0644"
-  notify:
-     - systemd restart and enable var.mount
+- name: "1.1.3.1 | AUDIT | Ensure /var is a separate partition"
+  block:
+      - name: "1.1.3.1 | AUDIT | Ensure /var is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.3.1 | WARN | Ensure /var is a separate partition | warn_count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+  vars:
+      warn_control_id: '1.1.3.1'
+      required_mount: '/var'
   when:
-     - ubtu22cis_rule_1_1_3_2 or
-       ubtu22cis_rule_1_1_3_3
+      - required_mount not in mount_names
+      - ubtu22cis_rule_1_1_3_1
+  tags:
+      - level2-server
+      - ubtu22cis_level1
+      - level2-workstation
+      - automated
+      - audit
+      - rule_1.1.3.1
+      - var
+
+
+
+- name: |
+    "1.1.3.2 | PATCH | Ensure /var partition includes the nodev option"
+    "1.1.3.3 | PATCH | Ensure /var partition includes the nosuid option"
+  ansible.posix.mount:
+      path: /var
+      src: "{{ item.device }}"
+      state: present
+      fstype: "{{ item.fstype }}"
+      opts: defaults,{% if ubtu22cis_rule_1_1_3_2 %}nodev,{% endif %}{% if ubtu22cis_rule_1_1_3_3 %}nosuid{% endif %}
+  notify: Remount var
+  loop: "{{ ansible_facts.mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+  when:
+      - item.mount == "/var"
+      - ubtu22cis_rule_1_1_3_2 or
+        ubtu22cis_rule_1_1_3_3
+   
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - automated
       - patch
@@ -178,59 +181,57 @@
       - rule_1.1.3.3
       - var
 
-
-
-# - name: |
-#     "1.1.3.2 | PATCH | Ensure /var partition includes the nodev option"
-#     "1.1.3.3 | PATCH | Ensure /var partition includes the nosuid option"
-#   ansible.posix.mount:
-#       path: /var
-#       src: "{{ item.device }}"
-#       state: present
-#       fstype: "{{ item.fstype }}"
-#       opts: defaults,{% if ubtu22cis_rule_1_1_3_2 %}nodev,{% endif %}{% if ubtu22cis_rule_1_1_3_3 %}nosuid{% endif %}
-#   notify: Remount var
-#   loop: "{{ ansible_facts.mounts }}"
-#   loop_control:
-#       label: "{{ item.device }}"
-#   when:
-#       - item.mount == "/var"
-#       - ubtu22cis_rule_1_1_3_2 or
-#         ubtu22cis_rule_1_1_3_3
-   
-#   tags:
-#       - level1-server
-#       - level1-workstation
-#       - automated
-#       - patch
-#       - rule_1.1.3.2
-#       - rule_1.1.3.3
-#       - var
-
-
-
 ###1.1.4.x Ensure separate partition exists for /var/tmp
-- name: |
-     1.1.4.1 | Configure /var/tmp
-     1.1.4.2 | Ensure separate partition exists for /var/tmp
-     1.1.4.2 | Ensure nodev option set on /var/tmp partition
-     1.1.4.3 | Ensure nosuid option set on /var/tmp partition
-     1.1.4.4 | Ensure noexec option set on /var/tmp partition
-  ansible.builtin.template:
-     src: etc/systemd/system/vartmp.mount.j2
-     dest: /etc/systemd/system/vartmp.mount
-     owner: "root"
-     group: "root"
-     mode: "0644"
-  notify:
-     - systemd restart and enable vartmp.mount
+
+
+
+- name: "1.1.4.1 | AUDIT | Ensure /var/tmp is a separate partition"
+  block:
+      - name: "1.1.4.1 | AUDIT | Ensure /var/tmp is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.4.1 | WARN | Ensure /var/tmp is a separate partition | warn_count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+  vars:
+      warn_control_id: '1.1.4.1'
+      required_mount: '/var/tmp'
   when:
-     - ubtu22cis_rule_1_1_4_2 or
-       ubtu22cis_rule_1_1_4_3 or
-       ubtu22cis_rule_1_1_4_4
+      - required_mount not in mount_names
+      - ubtu22cis_rule_1_1_4_1
+  tags:
+      - level2-server
+      - ubtu22cis_level1
+      - level2-workstation
+      - automated
+      - audit
+      - rule_1.1.4.1
+      - var
+
+- name: |
+    "1.1.4.2 | PATCH | Ensure /var/tmp partition includes the noexec option"
+    "1.1.4.3 | PATCH | Ensure /var/tmp partition includes the nosuid option"
+    "1.1.4.4 | PATCH | Ensure /var/tmp partition includes the nodev option"
+  ansible.posix.mount:
+      path: /var/tmp
+      src: "{{ item.device }}"
+      state: present
+      fstype: "{{ item.fstype }}"
+      opts: defaults,{% if ubtu22cis_rule_1_1_4_2 %}noexec,{% endif %}{% if ubtu22cis_rule_1_1_4_3 %}nosuid,{% endif %}{% if ubtu22cis_rule_1_1_4_4 %}nodev{% endif %}
+  notify: Remount var_tmp
+  with_items: "{{ ansible_facts.mounts }}"
+  loop_control:
+      label: "{{ item.device }}"
+  when:
+      - item.mount == "/var/tmp"
+      - ubtu22cis_rule_1_1_4_2 or
+        ubtu22cis_rule_1_1_4_3 or
+        ubtu22cis_rule_1_1_4_4
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.1.4.2
@@ -238,39 +239,31 @@
       - rule_1.1.4.4
       - var
 
-# - name: |
-#     "1.1.4.2 | PATCH | Ensure /var/tmp partition includes the noexec option"
-#     "1.1.4.3 | PATCH | Ensure /var/tmp partition includes the nosuid option"
-#     "1.1.4.4 | PATCH | Ensure /var/tmp partition includes the nodev option"
-#   ansible.posix.mount:
-#       path: /var/tmp
-#       src: "{{ item.device }}"
-#       state: present
-#       fstype: "{{ item.fstype }}"
-#       opts: defaults,{% if ubtu22cis_rule_1_1_4_2 %}noexec,{% endif %}{% if ubtu22cis_rule_1_1_4_3 %}nosuid,{% endif %}{% if ubtu22cis_rule_1_1_4_4 %}nodev{% endif %}
-#   notify: Remount var_tmp
-#   with_items: "{{ ansible_facts.mounts }}"
-#   loop_control:
-#       label: "{{ item.device }}"
-#   when:
-#       - item.mount == "/var/tmp"
-#       - ubtu22cis_rule_1_1_4_2 or
-#         ubtu22cis_rule_1_1_4_3 or
-#         ubtu22cis_rule_1_1_4_4
-#   tags:
-#       - level1-server
-#       - level1-workstation
-#       - automated
-#       - patch
-#       - rule_1.1.4.2
-#       - rule_1.1.4.3
-#       - rule_1.1.4.4
-#       - var
-
-
 ###1.1.5.x Ensure separate partition exists for /var/log
 
+- name: "1.1.5.1 | AUDIT | Ensure /var/log is a separate partition"
+  block:
+      - name: "1.1.5.1 | AUDIT | Ensure /var/log is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
 
+      - name: "1.1.5.1 | WARN | Ensure /var/log is a separate partition | warn_count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+  vars:
+      warn_control_id: '1.1.5.1'
+      required_mount: '/var/log'
+  when:
+      - required_mount not in mount_names
+      - ubtu22cis_rule_1_1_5_1
+  tags:
+      - level2-server
+      - level2-workstation
+      - ubtu22cis_level1
+      - automated
+      - audit
+      - rule_1.1.5.1
+      - varlog
 
 - name: |
     "1.1.5.2 | PATCH | Ensure /var/log partition includes the nodev option"
@@ -293,6 +286,7 @@
         ubtu22cis_rule_1_1_5_4
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - automated
       - patch
@@ -324,6 +318,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.1.5.6
@@ -333,6 +328,30 @@
 
 
 ###1.1.6.x Ensure separate partition exists for /homerule_1_1_8
+
+- name: "1.1.6.1 | AUDIT | Ensure /home is a separate partition"
+  block:
+      - name: "1.1.6.1 | AUDIT | Ensure /home is a separate partition | Absent"
+        ansible.builtin.debug:
+            msg: "Warning!! {{ required_mount }} doesn't exist. This is a manual task"
+
+      - name: "1.1.6.1 | WARN | Ensure /home is a separate partition | warn_count"
+        ansible.builtin.import_tasks:
+            file: warning_facts.yml
+  vars:
+      warn_control_id: '1.1.6.1'
+      required_mount: '/home'
+  when:
+      - required_mount not in mount_names
+      - ubtu22cis_rule_1_1_6_1
+  tags:
+      - level2-server
+      - level2-workstation
+      - ubtu22cis_level1
+      - automated
+      - audit
+      - rule_1.1.6.1
+      - home
 
 
 - name: |
@@ -355,6 +374,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.1.6.2
@@ -382,6 +402,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.1.7.1
@@ -400,6 +421,7 @@
       - ubtu22cis_rule_1_1_9
   tags:
       - skip_ansible_lint
+      - ubtu22cis_level1
       - section1
       - always
 
@@ -414,6 +436,7 @@
       - not ubtu22cis_allow_autofs
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level2-workstation
       - automated
       - patch
@@ -449,6 +472,7 @@
   tags:
       - level1-server
       - level2-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.1.9
@@ -481,6 +505,7 @@
       - ubtu22cis_rule_1_2_1
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - manual
       - audit
@@ -513,6 +538,7 @@
       - ubtu22cis_rule_1_2_2
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - manual
       - audit
@@ -556,6 +582,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.3.1
@@ -578,6 +605,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.3.2
@@ -613,6 +641,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.4.1
@@ -639,6 +668,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.4.2
@@ -654,6 +684,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.4.3
@@ -677,6 +708,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.5.1
@@ -700,6 +732,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.5.2
@@ -729,6 +762,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.5.3
@@ -784,6 +818,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.5.4
@@ -803,6 +838,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.6.1.1
@@ -862,6 +898,7 @@
       - ubtu22cis_rule_1_6_1_2
   tags:
       - level1-server
+      - ubtu22cis_level1
       - level1-workstation
       - automated
       - patch
@@ -913,6 +950,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.6.1.3
@@ -943,6 +981,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.7.1
@@ -963,6 +1002,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.7.2
@@ -983,6 +1023,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.7.3
@@ -999,6 +1040,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.7.4
@@ -1016,6 +1058,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.7.5
@@ -1033,6 +1076,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.7.6
@@ -1072,6 +1116,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.2
@@ -1125,6 +1170,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.3
@@ -1166,6 +1212,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.4
@@ -1196,6 +1243,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.5
@@ -1226,6 +1274,7 @@
   tags:
       - level1-server
       - level2-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.6
@@ -1256,6 +1305,7 @@
   tags:
       - level1-server
       - level2-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.7
@@ -1286,6 +1336,7 @@
   tags:
       - level1-server
       - level2-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.8
@@ -1316,6 +1367,7 @@
   tags:
       - level1-server
       - level2-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.9
@@ -1331,6 +1383,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_1.8.10
@@ -1349,6 +1402,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - manual
       - patch
       - rule_1.9

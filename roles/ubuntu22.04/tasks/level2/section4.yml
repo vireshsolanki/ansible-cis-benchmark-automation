@@ -30,6 +30,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - patch
       - auditd
       - always
@@ -46,6 +47,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.1.1
@@ -61,6 +63,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.1.2
@@ -98,6 +101,7 @@
       - level2-server
       - level2-workstation
       - automated
+      - ubtu22cis_level2
       - patch
       - rule_4.1.1.3
       - auditd
@@ -132,6 +136,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.1.4
@@ -150,6 +155,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.2.1
@@ -167,6 +173,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.2.2
@@ -188,6 +195,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.2.3
@@ -201,6 +209,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.1
@@ -215,6 +224,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.2
@@ -229,6 +239,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.3
@@ -242,6 +253,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.4
@@ -255,6 +267,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.5
@@ -276,6 +289,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.6
@@ -289,6 +303,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.7
@@ -302,6 +317,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.8
@@ -315,6 +331,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.9
@@ -328,6 +345,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.10
@@ -340,6 +358,7 @@
       - ubtu22cis_rule_4_1_3_11
   tags:
       - level2-server
+      - ubtu22cis_level2
       - level2-workstation
       - automated
       - patch
@@ -354,6 +373,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.12
@@ -367,6 +387,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.13
@@ -380,6 +401,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.14
@@ -393,6 +415,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.15
@@ -406,6 +429,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.16
@@ -419,6 +443,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.17
@@ -432,6 +457,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.18
@@ -445,6 +471,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - patch
       - rule_4.1.3.19
@@ -458,6 +485,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - scored
       - patch
@@ -473,6 +501,7 @@
   tags:
       - level2-server
       - level2-workstation
+      - ubtu22cis_level2
       - automated
       - scored
       - patch
