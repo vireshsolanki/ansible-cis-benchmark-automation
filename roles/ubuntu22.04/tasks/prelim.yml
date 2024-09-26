@@ -1,4 +1,43 @@
 ---
+- name: Install essential packages
+  apt:
+    name:
+       - git
+       - curl
+       - wget
+    state: present
+
+- name: Install Docker
+  apt:
+    name: docker.io
+    state: present
+- name: Start and enable Docker service
+  systemd:
+     name: docker
+     state: started
+     enabled: yes
+
+- name: Add Docker Compose binary
+  get_url:
+      url: "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+      dest: /usr/local/bin/docker-compose
+      mode: '0755'
+
+- name: Ensure Docker Compose is executable
+  file:
+      path: /usr/local/bin/docker-compose
+      mode: '0755'
+
+- name: Verify Docker Compose installation
+  shell: docker-compose --version
+  register: docker_compose_version
+
+- name: Display Docker Compose version
+  debug:
+    msg: "Docker Compose version: {{ docker_compose_version.stdout }}"
+
+
+
 - name: "PRELIM | AUDIT | Set default values for facts"
   ansible.builtin.set_fact:
       control_1_6_1_4_was_run: false
@@ -104,22 +143,22 @@
       - skip_ansible_lint
       - always
 
-- name: "PRELIM | Include audit specific variables"
-  ansible.builtin.include_vars: audit.yml
-  when:
-      - run_audit or audit_only
-      - setup_audit
-  tags:
-      - setup_audit
-      - run_audit
+# - name: "PRELIM | Include audit specific variables"
+#   ansible.builtin.include_vars: audit.yml
+#   when:
+#       - run_audit or audit_only
+#       - setup_audit
+#   tags:
+#       - setup_audit
+#       - run_audits
 
-- name: "PRELIM | Include pre-remediation audit tasks"
-  ansible.builtin.import_tasks: pre_remediation_audit.yml
-  when:
-      - run_audit or audit_only
-      - setup_audit
-  tags:
-      - run_audit
+# - name: "PRELIM | Include pre-remediation audit tasks"
+#   ansible.builtin.import_tasks: pre_remediation_audit.yml
+#   when:
+#       - run_audit or audit_only
+#       - setup_audit
+#   tags:
+#       - run_audit
 
 
 - name: "PRELIM | PATCH | Run apt update"

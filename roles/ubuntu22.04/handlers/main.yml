@@ -77,10 +77,10 @@
       src: /dev/shm
       state: remounted
 
-# - name: Grub update
-#   ansible.builtin.shell: update-grub
-#   failed_when: false
-#   notify: set_reboot_required
+- name: Grub update
+  ansible.builtin.shell: update-grub
+  failed_when: false
+  notify: set_reboot_required
 
 - name: Restart timeservice
   ansible.builtin.systemd:

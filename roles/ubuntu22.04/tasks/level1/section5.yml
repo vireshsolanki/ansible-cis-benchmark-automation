@@ -341,6 +341,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.5
@@ -360,6 +361,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.6
@@ -379,6 +381,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.7
@@ -397,6 +400,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.8
@@ -416,6 +420,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.9
@@ -434,6 +439,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.10
@@ -452,6 +458,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.11
@@ -472,6 +479,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.13
@@ -491,6 +499,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.14
@@ -510,6 +519,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.15
@@ -531,6 +541,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.17
@@ -550,6 +561,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.18
@@ -568,6 +580,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.19
@@ -587,6 +600,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.2.20
@@ -607,6 +621,7 @@
       - level1-server
       - level1-workstation
       - automated
+      - ubtu22cis_level1
       - patch
       - rule_5.2.21
       - ssh
@@ -628,6 +643,7 @@
       - level1-server
       - level1-workstation
       - automated
+      - ubtu22cis_level1
       - patch
       - rule_5.2.22
       - sshd
@@ -642,6 +658,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.3.1
@@ -658,6 +675,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.3.2
@@ -674,6 +692,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.3.3
@@ -690,6 +709,7 @@
         ubtu22cis_rule_5_3_5
   tags:
       - always
+      - ubtu22cis_level1
 
 
 - name: "5.3.5 | PATCH | Ensure re-authentication for privilege escalation is not disabled globally"
@@ -704,6 +724,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - sudo
       - rule_5.3.5
@@ -740,6 +761,7 @@
       - level1-workstation
       - patch
       - sudo
+      - ubtu22cis_level1
       - rule_5.3.6
 
 - name: "5.3.7 | PATCH | Ensure access to the su command is restricted"
@@ -767,6 +789,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - patch
       - sudo
       - rule_5.3.7
@@ -835,6 +858,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.4.1
@@ -882,6 +906,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.4.2
@@ -917,6 +942,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.4.3
@@ -952,6 +978,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.4.4
@@ -983,6 +1010,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.4.5
@@ -1016,6 +1044,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.1.1
@@ -1050,6 +1079,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.1.2
@@ -1083,6 +1113,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.1.3
@@ -1122,6 +1153,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.1.4
@@ -1171,6 +1203,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.1.5
@@ -1205,6 +1238,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.2
@@ -1227,6 +1261,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.3
@@ -1269,6 +1304,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.4
@@ -1296,6 +1332,7 @@
   tags:
       - level1-server
       - level1-workstation
+      - ubtu22cis_level1
       - automated
       - patch
       - rule_5.5.5

@@ -347,7 +347,7 @@ ubtu22cis_rule_5_5_1_4: true
 ubtu22cis_rule_5_5_1_5: true
 ubtu22cis_rule_5_5_2: true
 ubtu22cis_rule_5_5_3: true
-ubtu22cis_rule_5_5_4: true
+ubtu22cis_rule_5_5_4: false
 ubtu22cis_rule_5_5_5: true
 ubtu22cis_rule_5_6: true
 ubtu22cis_rule_5_7: true
@@ -538,11 +538,11 @@ ubtu22cis_grub_user_file: /etc/grub.d/00_user
 ubtu22cis_bootloader_password_hash: "grub.pbkdf2.sha512.changethispassword"  # pragma: allowlist secret
 ubtu22cis_set_boot_pass: false
 
-# ubtu22cis_grub_file: /boot/grub/grub.cfg
+ubtu22cis_grub_file: /boot/grub/grub.cfg
 
 ## Controls 1.5.x
 # Ability to set file in which the kernel systcl changes are placed
-# ubtu22cis_sysctl_kernel_conf: /etc/sysctl.d/98_cis_kernel.conf
+ubtu22cis_sysctl_kernel_conf: /etc/sysctl.d/98_cis_kernel.conf
 
 ## Controls 1.6.1.x - apparmor
 # AppArmor security policies define what system resources applications can access and their privileges.
@@ -956,7 +956,7 @@ ubtu22cis_pass:
 ## Control 5.5.4 - Default user mask
 # The following variable specifies the "umask" to set in the `/etc/bash.bashrc` and `/etc/profile`.
 # The value needs to be `027` or more restrictive to comply with CIS standards
-# ubtu22cis_bash_umask: '027'
+ubtu22cis_bash_umask: '027'
 
 ## Control 5.5.5 - Configuring user shell timeout
 # This dictionary is related to ensuring the rule about user shell timeout

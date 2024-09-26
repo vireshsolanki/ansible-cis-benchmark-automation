@@ -875,7 +875,7 @@
         ansible.builtin.lineinfile:
             path: /etc/default/grub
             regexp: '^GRUB_CMDLINE_LINUX='
-            line: 'GRUB_CMDLINE_LINUX="apparmor=1 security=apparmor {{ ubtu22cis_1_6_1_2_cmdline_settings.stdout }}"'
+            line: 'GRUB_CMDLINE_LINUX="apparmor=1 security=apparmor {{ ubtu22cis_1_6_1_2_cmdline_settings.stdout }}  numa=off nvme_core.default_ps_max_latency_us=0 "'
             insertafter: '^GRUB_'
         when:
             - "'apparmor' not in ubtu22cis_1_6_1_2_cmdline_settings.stdout"
@@ -890,6 +890,8 @@
         with_items:
             - { regexp: 'apparmor=\w+', replace: 'apparmor=1' }
             - { regexp: 'security=\w+', replace: 'security=apparmor' }
+            - { regexp: 'numa=\w*', replace: 'numa=off' } 
+            - { regexp: 'nvme_core\.default_ps_max_latency_us=\d+', replace: 'nvme_core.default_ps_max_latency_us=0' }
         when:
             - "'apparmor' in ubtu22cis_1_6_1_2_cmdline_settings.stdout or
               'security' in ubtu22cis_1_6_1_2_cmdline_settings.stdout"
