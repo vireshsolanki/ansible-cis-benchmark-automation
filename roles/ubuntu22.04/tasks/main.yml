@@ -192,6 +192,14 @@
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
+# - name: Hold Docker package
+#   command: apt-mark hold docker.io
+
+# - name: Hold Docker Compose
+#   command: apt-mark hold docker-compose
+
+# - name: Hold Python 3 package
+#   command: apt-mark hold python3
 
 - name: Reboot system
   block:
