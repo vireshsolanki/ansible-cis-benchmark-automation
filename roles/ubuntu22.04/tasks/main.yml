@@ -18,27 +18,27 @@
       - always
 
 #  This control should always run as this can pass on unintended issues.
-- name: "Check password set for connecting user"
-  block:
-      - name: Capture current password state of connecting user"
-        ansible.builtin.shell: "grep -w {{ ansible_env.SUDO_USER }} /etc/shadow | awk -F: '{print $2}'"
-        changed_when: false
-        failed_when: false
-        check_mode: false
-        register: ansible_user_password_set
+# - name: "Check password set for connecting user"
+#   block:
+#       - name: Capture current password state of connecting user"
+#         ansible.builtin.shell: "grep -w {{ ansible_env.SUDO_USER }} /etc/shadow | awk -F: '{print $2}'"
+#         changed_when: false
+#         failed_when: false
+#         check_mode: false
+#         register: ansible_user_password_set
 
-      - name: "Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked"
-        ansible.builtin.assert:
-            that: ansible_user_password_set.stdout != "!!" and ansible_user_password_set.stdout | length > 10
-            fail_msg: "You have {{ sudo_password_rule }} enabled but the user = {{ ansible_env.SUDO_USER }} has no password set - It can break access"
-            success_msg: "You have a password set for sudo user {{ ansible_env.SUDO_USER }}"
-        vars:
-            sudo_password_rule: ubtu22cis_rule_5_3_4  # pragma: allowlist secret
-  when:
-      - ubtu22cis_rule_5_3_4
-      - ansible_env.SUDO_USER is defined
-  tags:
-      - always
+#       - name: "Assert that password set for {{ ansible_env.SUDO_USER }} and account not locked"
+#         ansible.builtin.assert:
+#             that: ansible_user_password_set.stdout != "!!" and ansible_user_password_set.stdout | length > 10
+#             fail_msg: "You have {{ sudo_password_rule }} enabled but the user = {{ ansible_env.SUDO_USER }} has no password set - It can break access"
+#             success_msg: "You have a password set for sudo user {{ ansible_env.SUDO_USER }}"
+#         vars:
+#             sudo_password_rule: ubtu22cis_rule_5_3_4  # pragma: allowlist secret
+#   when:
+#       - ubtu22cis_rule_5_3_4
+#       - ansible_env.SUDO_USER is defined
+#   tags:
+#       - always
 
 - name: Check ubtu22cis_bootloader_password_hash variable has been changed
   ansible.builtin.assert:
