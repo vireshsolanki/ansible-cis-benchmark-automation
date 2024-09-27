@@ -331,7 +331,7 @@ ubtu22cis_rule_5_2_22: true
 ubtu22cis_rule_5_3_1: true
 ubtu22cis_rule_5_3_2: true
 ubtu22cis_rule_5_3_3: true
-ubtu22cis_rule_5_3_4: true
+ubtu22cis_rule_5_3_4: false
 ubtu22cis_rule_5_3_5: true
 ubtu22cis_rule_5_3_6: true
 ubtu22cis_rule_5_3_7: true
